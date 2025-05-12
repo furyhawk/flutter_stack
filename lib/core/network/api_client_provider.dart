@@ -4,11 +4,24 @@ import 'package:flutter_stack/core/config/app_config.dart';
 
 class ApiClientProvider {
   ApiClient? _apiClient;
+  String? _authToken;
 
   ApiClient get apiClient {
     _apiClient ??= _createApiClient();
     return _apiClient!;
   }
+
+  // Setter for the auth token
+  set authToken(String? token) {
+    _authToken = token;
+    // Update bearer auth when token changes
+    if (_apiClient != null && token != null) {
+      _apiClient!.setBearerAuth('', token);
+    }
+  }
+
+  // Getter for the auth token
+  String? get authToken => _authToken;
 
   ApiClient _createApiClient() {
     final dio = Dio(
@@ -41,19 +54,12 @@ class ApiClientProvider {
     return InterceptorsWrapper(
       onRequest: (options, handler) {
         // Add auth token if available
-        final token = _getAuthToken();
-        if (token != null) {
-          options.headers['Authorization'] = 'Bearer $token';
+        if (_authToken != null) {
+          options.headers['Authorization'] = 'Bearer $_authToken';
         }
         return handler.next(options);
       },
     );
-  }
-
-  String? _getAuthToken() {
-    // Implement secure token storage and retrieval
-    // This is just a placeholder
-    return null;
   }
 
   // API service getters

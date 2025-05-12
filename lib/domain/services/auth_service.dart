@@ -79,14 +79,19 @@ class AuthService extends ChangeNotifier {
   /// Logout current user
   Future<void> logout() async {
     _token = null;
+    _updateAuthHeaders(null);
     _currentUser = null;
     _status = AuthStatus.unauthenticated;
     notifyListeners();
   }
   
   /// Update API client with authentication token
-  void _updateAuthHeaders(String token) {
-    _apiClientProvider.apiClient.setBearerAuth('', token);
+  void _updateAuthHeaders(String? token) {
+    // Update token in both places
+    _apiClientProvider.authToken = token;
+    if (token != null) {
+      _apiClientProvider.apiClient.setBearerAuth('', token);
+    }
   }
   
   /// Fetch current user details
@@ -108,6 +113,7 @@ class AuthService extends ChangeNotifier {
           print('Failed to get user profile: ${result.message}');
         }
         _token = null;
+        _updateAuthHeaders(null);
         _status = AuthStatus.unauthenticated;
       }
     } catch (e) {
@@ -115,6 +121,7 @@ class AuthService extends ChangeNotifier {
         print('Error fetching user profile: $e');
       }
       _token = null;
+      _updateAuthHeaders(null);
       _status = AuthStatus.unauthenticated;
     }
     
