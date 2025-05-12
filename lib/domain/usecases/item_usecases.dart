@@ -12,7 +12,7 @@ class GetItemsUseCase {
     
     if (result.isSuccess && result.data != null) {
       // Convert from ItemsPublic to List<ItemPublic>
-      return ApiResult.success(result.data!.toList());
+      return ApiResult.success(result.data!.data.toList());
     }
     
     return ApiResult.error(

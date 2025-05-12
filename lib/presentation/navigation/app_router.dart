@@ -28,7 +28,7 @@ class AppRouter {
 class AuthGuard extends StatefulWidget {
   final Widget child;
 
-  const AuthGuard({Key? key, required this.child}) : super(key: key);
+  const AuthGuard({super.key, required this.child});
 
   @override
   State<AuthGuard> createState() => _AuthGuardState();
@@ -62,7 +62,7 @@ class _AuthGuardState extends State<AuthGuard> {
 }
 
 class SplashScreen extends StatelessWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

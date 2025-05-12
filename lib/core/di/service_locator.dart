@@ -10,7 +10,7 @@ class ServiceLocator {
   static final ServiceLocator _instance = ServiceLocator._();
   static ServiceLocator get instance => _instance;
   
-  final Map<Type, Object> _dependencies = {};
+  final Map<Type, dynamic> _dependencies = {};
   
   T get<T>() {
     final instance = _dependencies[T];
@@ -63,10 +63,10 @@ class ServiceLocatorProvider extends InheritedWidget {
   final ServiceLocator serviceLocator;
   
   const ServiceLocatorProvider({
-    Key? key,
+    super.key,
     required this.serviceLocator,
-    required Widget child,
-  }) : super(key: key, child: child);
+    required super.child,
+  });
   
   static ServiceLocator of(BuildContext context) {
     final provider = context.dependOnInheritedWidgetOfExactType<ServiceLocatorProvider>();

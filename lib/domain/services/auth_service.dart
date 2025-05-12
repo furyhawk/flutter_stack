@@ -67,14 +67,12 @@ class AuthService extends ChangeNotifier {
   Future<ApiResult<UserPublic>> register({
     required String email,
     required String password,
-    required String firstName,
-    required String lastName,
+    required String fullName,
   }) async {
     return _registerUseCase.execute(
       email: email,
       password: password,
-      firstName: firstName,
-      lastName: lastName,
+      fullName: fullName,
     );
   }
   

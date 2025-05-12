@@ -18,7 +18,7 @@ class AppTheme {
         seedColor: primaryColor,
         secondary: secondaryColor,
         error: errorColor,
-        background: backgroundColor,
+        surface: backgroundColor,
       ),
       appBarTheme: const AppBarTheme(
         elevation: 0,

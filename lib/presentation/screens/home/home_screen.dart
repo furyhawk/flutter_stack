@@ -6,7 +6,7 @@ import 'package:flutter_stack/domain/usecases/item_usecases.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${user.firstName} ${user.lastName}',
+                              user.fullName ?? 'User',
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                             Text(

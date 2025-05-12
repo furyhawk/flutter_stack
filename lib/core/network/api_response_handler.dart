@@ -74,7 +74,6 @@ class ApiResponseHandler {
       case DioExceptionType.connectionError:
         return 'No internet connection';
       case DioExceptionType.unknown:
-      default:
         return 'An unexpected error occurred';
     }
   }

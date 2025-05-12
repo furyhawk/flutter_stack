@@ -23,14 +23,12 @@ class RegisterUseCase {
   Future<ApiResult<UserPublic>> execute({
     required String email,
     required String password,
-    required String firstName,
-    required String lastName,
+    required String fullName,
   }) async {
     final userRegister = UserRegister((b) => b
       ..email = email
       ..password = password
-      ..firstName = firstName
-      ..lastName = lastName
+      ..fullName = fullName
     );
     
     return _repository.register(userRegister);
@@ -53,12 +51,12 @@ class UpdateUserProfileUseCase {
   UpdateUserProfileUseCase(this._repository);
   
   Future<ApiResult<UserPublic>> execute({
-    String? firstName,
-    String? lastName,
+    String? fullName,
+    String? email,
   }) async {
     final userUpdateMe = UserUpdateMe((b) => b
-      ..firstName = firstName
-      ..lastName = lastName
+      ..fullName = fullName
+      ..email = email
     );
     
     return _repository.updateCurrentUser(userUpdateMe);

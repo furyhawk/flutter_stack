@@ -19,7 +19,7 @@ class UserRepository extends BaseRepository {
   /// Get user by ID
   Future<ApiResult<UserPublic>> getUser(String id) async {
     return safeApiCall(() async {
-      final response = await apiClientProvider.usersApi.usersReadUserById(userId: id);
+      final response = await apiClientProvider.usersApi.usersReadUser(id: id);
       if (response.data == null) {
         throw Exception('No data returned');
       }
@@ -44,7 +44,7 @@ class UserRepository extends BaseRepository {
   Future<ApiResult<UserPublic>> updateUser(String id, UserUpdate user) async {
     return safeApiCall(() async {
       final response = await apiClientProvider.usersApi.usersUpdateUser(
-        userId: id,
+        id: id,
         userUpdate: user,
       );
       if (response.data == null) {

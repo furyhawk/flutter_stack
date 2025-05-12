@@ -57,9 +57,9 @@ class ApiClientProvider {
   }
 
   // API service getters
-  ItemsApi get itemsApi => apiClient.getItemsApi();
-  UsersApi get usersApi => apiClient.getUsersApi();
-  LoginApi get loginApi => apiClient.getLoginApi();
-  PrivateApi get privateApi => apiClient.getPrivateApi();
-  UtilsApi get utilsApi => apiClient.getUtilsApi();
+  ItemsApi get itemsApi => ItemsApi(apiClient.dio, apiClient.serializers);
+  UsersApi get usersApi => UsersApi(apiClient.dio, apiClient.serializers);
+  LoginApi get loginApi => LoginApi(apiClient.dio, apiClient.serializers);
+  PrivateApi get privateApi => PrivateApi(apiClient.dio, apiClient.serializers);
+  UtilsApi get utilsApi => UtilsApi(apiClient.dio, apiClient.serializers);
 }
