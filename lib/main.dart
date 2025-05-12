@@ -16,7 +16,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Initialize app configuration
-  AppConfig.initialize(environment: Environment.dev);
+  AppConfig.initialize(environment: Environment.staging);
   
   // Initialize dependencies
   _initDependencies();
