@@ -6,6 +6,7 @@ import 'package:flutter_stack/core/theme/app_theme.dart';
 import 'package:flutter_stack/data/repositories/item_repository.dart';
 import 'package:flutter_stack/data/repositories/user_repository.dart';
 import 'package:flutter_stack/domain/services/auth_service.dart';
+import 'package:flutter_stack/domain/services/item_service.dart';
 import 'package:flutter_stack/domain/usecases/auth_usecases.dart';
 import 'package:flutter_stack/domain/usecases/item_usecases.dart';
 import 'package:flutter_stack/presentation/navigation/app_router.dart';
@@ -77,6 +78,15 @@ void _initDependencies() {
       apiClientProvider: serviceLocator.get<ApiClientProvider>(),
     ),
   );
+
+  serviceLocator.registerSingleton<ItemService>(
+    () => ItemService(
+      createItemUseCase: serviceLocator.get<CreateItemUseCase>(),
+      getItemsUseCase: serviceLocator.get<GetItemsUseCase>(),
+      updateItemUseCase: serviceLocator.get<UpdateItemUseCase>(),
+      deleteItemUseCase: serviceLocator.get<DeleteItemUseCase>(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -88,6 +98,9 @@ class MainApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<AuthService>.value(
           value: ServiceLocator.instance.get<AuthService>(),
+        ),
+        Provider<ItemService>.value(
+          value: ServiceLocator.instance.get<ItemService>(),
         ),
       ],
       child: MaterialApp(

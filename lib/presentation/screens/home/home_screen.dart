@@ -2,7 +2,8 @@ import 'package:api_client/api_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stack/core/di/service_locator.dart';
 import 'package:flutter_stack/domain/services/auth_service.dart';
-import 'package:flutter_stack/domain/usecases/item_usecases.dart';
+import 'package:flutter_stack/domain/services/item_service.dart';
+import 'package:flutter_stack/presentation/widgets/dialogs/item_dialog.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,7 +14,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _getItemsUseCase = ServiceLocator.instance.get<GetItemsUseCase>();
+  final _itemService = ServiceLocator.instance.get<ItemService>();
   List<ItemPublic>? _items;
   bool _isLoading = false;
   String? _error;
@@ -30,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _error = null;
     });
 
-    final result = await _getItemsUseCase.execute();
+    final result = await _itemService.getItems();
 
     setState(() {
       _isLoading = false;
@@ -44,6 +45,52 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _logout() async {
     await context.read<AuthService>().logout();
+  }
+
+  Future<void> _showAddItemDialog() async {
+    final result = await ItemDialog.show(context: context);
+
+    if (result != null) {
+      await _addNewItem(
+        title: result['title']!,
+        description:
+            result['description']!.isNotEmpty ? result['description'] : null,
+      );
+    }
+  }
+
+  Future<void> _addNewItem({required String title, String? description}) async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    final result = await _itemService.createItem(
+      title: title,
+      description: description,
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (result.isSuccess && result.data != null) {
+      // Add the new item to the list and refresh the list
+      await _loadItems();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Item created successfully')),
+      );
+    } else {
+      setState(() {
+        _error = result.message ?? 'Failed to create item';
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result.message ?? 'Failed to create item'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
   }
 
   @override
@@ -72,9 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
                     children: [
-                      const CircleAvatar(
-                        child: Icon(Icons.person),
-                      ),
+                      const CircleAvatar(child: Icon(Icons.person)),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
@@ -96,15 +141,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-          Expanded(
-            child: _buildItemsList(),
-          ),
+          Expanded(child: _buildItemsList()),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Add new item (implementation would go here)
-        },
+        onPressed: _showAddItemDialog,
         child: const Icon(Icons.add),
       ),
     );
@@ -112,9 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildItemsList() {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_error != null) {
@@ -128,19 +167,14 @@ class _HomeScreenState extends State<HomeScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _loadItems,
-              child: const Text('Retry'),
-            ),
+            ElevatedButton(onPressed: _loadItems, child: const Text('Retry')),
           ],
         ),
       );
     }
 
     if (_items == null || _items!.isEmpty) {
-      return const Center(
-        child: Text('No items found'),
-      );
+      return const Center(child: Text('No items found'));
     }
 
     return RefreshIndicator(
@@ -151,9 +185,7 @@ class _HomeScreenState extends State<HomeScreen> {
           final item = _items![index];
           return ListTile(
             title: Text(item.title),
-            subtitle: item.description != null
-                ? Text(item.description!)
-                : null,
+            subtitle: item.description != null ? Text(item.description!) : null,
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () {
               // Navigate to item details (implementation would go here)
