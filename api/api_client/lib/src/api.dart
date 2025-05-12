@@ -16,7 +16,7 @@ import 'package:api_client/src/api/users_api.dart';
 import 'package:api_client/src/api/utils_api.dart';
 
 class ApiClient {
-  static const String basePath = r'http://localhost';
+  static const String basePath = r'https://service.furyhawk.lol';
 
   final Dio dio;
   final Serializers serializers;

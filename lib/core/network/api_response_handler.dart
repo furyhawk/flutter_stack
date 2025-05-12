@@ -49,9 +49,19 @@ class ApiResponseHandler {
         statusCode: e.response?.statusCode,
         data: e.response?.data,
       );
+    } on ApiException catch (e) {
+      if (kDebugMode) {
+        print('API Exception: ${e.message}');
+      }
+      return ApiResult.error(e.message, statusCode: e.statusCode, data: e.error);
     } catch (e) {
       if (kDebugMode) {
         print('Unexpected error: $e');
+      }
+      // Check for type casting error which often indicates deserialization issues
+      if (e is TypeError) {
+        final errorMessage = 'Data format error: ${e.toString()}';
+        return ApiResult.error(errorMessage);
       }
       return ApiResult.error('An unexpected error occurred: $e');
     }
@@ -74,6 +84,9 @@ class ApiResponseHandler {
       case DioExceptionType.connectionError:
         return 'No internet connection';
       case DioExceptionType.unknown:
+        if (error.error is TypeError) {
+          return 'Data format error: ${error.error}';
+        }
         return 'An unexpected error occurred';
     }
   }
@@ -85,7 +98,20 @@ class ApiResponseHandler {
     if (data is Map && data.containsKey('message')) {
       return data['message'].toString();
     } else if (data is Map && data.containsKey('detail')) {
-      return data['detail'].toString();
+      final detail = data['detail'];
+      if (detail is List && detail.isNotEmpty) {
+        // Handle array of validation errors
+        if (detail.first is Map) {
+          // If the first element has a 'msg' field, use that
+          if (detail.first.containsKey('msg')) {
+            return detail.first['msg'];
+          }
+          // Otherwise return a formatted version of the first error object
+          return detail.first.toString();
+        }
+      }
+      // Fallback to toString() for other cases
+      return detail.toString();
     }
     
     switch (statusCode) {

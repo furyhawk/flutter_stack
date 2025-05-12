@@ -1,4 +1,5 @@
 import 'package:api_client/api_client.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_stack/core/network/api_response_handler.dart';
 import 'package:flutter_stack/data/repositories/base_repository.dart';
 
@@ -60,6 +61,7 @@ class UserRepository extends BaseRepository {
       final response = await apiClientProvider.loginApi.loginLoginAccessToken(
         username: username,
         password: password,
+        grantType: 'password',  // Required by the API
       );
       if (response.data == null) {
         throw Exception('No data returned');
@@ -84,11 +86,18 @@ class UserRepository extends BaseRepository {
   /// Get current user
   Future<ApiResult<UserPublic>> getCurrentUser() async {
     return safeApiCall(() async {
-      final response = await apiClientProvider.usersApi.usersReadUserMe();
-      if (response.data == null) {
-        throw Exception('No data returned');
+      try {
+        final response = await apiClientProvider.usersApi.usersReadUserMe();
+        if (response.data == null) {
+          throw ApiException('No data returned');
+        }
+        return response.data!;
+      } catch (e) {
+        if (e is DioException && e.type == DioExceptionType.badResponse && e.response?.statusCode == 401) {
+          throw ApiException('Authentication required', statusCode: 401);
+        }
+        rethrow;
       }
-      return response.data!;
     });
   }
   

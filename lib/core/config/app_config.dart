@@ -32,7 +32,7 @@ class AppConfig {
   static String _getApiBaseUrl(Environment environment) {
     switch (environment) {
       case Environment.dev:
-        return 'http://localhost:8000';
+        return 'https://service.furyhawk.lol';
       case Environment.staging:
         return 'https://staging-api.example.com';
       case Environment.prod:

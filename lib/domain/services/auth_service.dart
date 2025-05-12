@@ -97,12 +97,23 @@ class AuthService extends ChangeNotifier {
       return;
     }
     
-    final result = await _getCurrentUserUseCase.execute();
-    
-    if (result.isSuccess && result.data != null) {
-      _currentUser = result.data;
-      _status = AuthStatus.authenticated;
-    } else {
+    try {
+      final result = await _getCurrentUserUseCase.execute();
+      
+      if (result.isSuccess && result.data != null) {
+        _currentUser = result.data;
+        _status = AuthStatus.authenticated;
+      } else {
+        if (kDebugMode) {
+          print('Failed to get user profile: ${result.message}');
+        }
+        _token = null;
+        _status = AuthStatus.unauthenticated;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching user profile: $e');
+      }
       _token = null;
       _status = AuthStatus.unauthenticated;
     }
