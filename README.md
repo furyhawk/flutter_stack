@@ -1,6 +1,6 @@
 # Flutter Stack
 
-A modern Flutter project with API client generation capabilities.
+A modern Flutter project with API client generation capabilities that follows best practices.
 
 ## Overview
 
@@ -9,17 +9,41 @@ This project demonstrates a Flutter application with integrated OpenAPI client g
 - JSON serialization with `json_annotation` and `freezed`
 - API client generation with OpenAPI Generator
 - HTTP requests using `dio`
+- Secure storage with `flutter_secure_storage`
 - Testing with `mockito` and `http_mock_adapter`
 
-## Project Structure
+## Features
+
+- Authentication (login, registration, and profile management)
+- Item management (create, read, update, and delete items)
+- Weather information display
+- Secure storage for authentication tokens
+- Theme support (light and dark)
+- Clean architecture pattern
+
+## Architecture
+
+The application follows a clean architecture approach with the following layers:
+
+- **Presentation**: UI components (screens, widgets)
+- **Domain**: Business logic and models
+- **Data**: Repositories and data sources
+
+### Project Structure
 
 ```
-flutter_stack/
-├── api/                  # Generated API client code
-├── lib/                  # Application source code
-├── scripts/              # Utility scripts
-│   └── generate_api.sh   # API client generation script
-└── pubspec.yaml          # Dependencies and configuration
+lib/
+  ├── core/            # Core functionality
+  │   ├── api/         # API-related code
+  │   ├── theme/       # Theming
+  │   └── utils/       # Utilities
+  ├── features/        # Application features
+  │   ├── auth/        # Authentication feature
+  │   ├── items/       # Items management
+  │   ├── profile/     # User profile
+  │   └── weather/     # Weather information
+  ├── app.dart         # Main app widget
+  └── main.dart        # Application entry point
 ```
 
 ## API Client Generation
