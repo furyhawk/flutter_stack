@@ -7,11 +7,15 @@ part of 'serializers.dart';
 // **************************************************************************
 
 Serializers _$serializers = (new Serializers().toBuilder()
+      ..add(AreaMetadata.serializer)
+      ..add(Forecast.serializer)
+      ..add(ForecastPeriod.serializer)
       ..add(HTTPValidationError.serializer)
       ..add(ItemCreate.serializer)
       ..add(ItemPublic.serializer)
       ..add(ItemUpdate.serializer)
       ..add(ItemsPublic.serializer)
+      ..add(LabelLocation.serializer)
       ..add(Message.serializer)
       ..add(NewPassword.serializer)
       ..add(PrivateUserCreate.serializer)
@@ -25,6 +29,18 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(UsersPublic.serializer)
       ..add(ValidationError.serializer)
       ..add(ValidationErrorLocInner.serializer)
+      ..add(WeatherData.serializer)
+      ..add(WeatherItem.serializer)
+      ..add(WeatherResponse.serializer)
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(AreaMetadata)]),
+          () => new ListBuilder<AreaMetadata>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(WeatherItem)]),
+          () => new ListBuilder<WeatherItem>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(Forecast)]),
+          () => new ListBuilder<Forecast>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(ItemPublic)]),
           () => new ListBuilder<ItemPublic>())
