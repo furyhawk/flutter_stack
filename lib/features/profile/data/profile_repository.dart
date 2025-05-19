@@ -11,8 +11,8 @@ class ProfileRepository {
   /// Get current user profile
   Future<UserPublic> getCurrentUser() async {
     try {
-      final response = await _apiService.usersApi.usersIdGet(id: 'me');
-      return response.data;
+      final response = await _apiService.usersApi.usersReadUserMe();
+      return response.data!;
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
@@ -30,11 +30,11 @@ class ProfileRepository {
         ..fullName = fullName
         ..email = email);
       
-      final response = await _apiService.usersApi.usersMePut(
+      final response = await _apiService.usersApi.usersUpdateUserMe(
         userUpdateMe: userUpdateMe,
       );
       
-      return response.data;
+      return response.data!;
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
@@ -52,7 +52,7 @@ class ProfileRepository {
         ..currentPassword = currentPassword
         ..newPassword = newPassword);
       
-      await _apiService.usersApi.usersMePasswordPut(
+      await _apiService.usersApi.usersUpdatePasswordMe(
         updatePassword: updatePassword,
       );
     } on DioException catch (e) {

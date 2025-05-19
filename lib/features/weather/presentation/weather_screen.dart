@@ -1,4 +1,5 @@
 import 'package:api_client/api_client.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stack/core/utils/service_locator.dart';
 import 'package:flutter_stack/features/weather/data/weather_repository.dart';
@@ -72,16 +73,19 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     ],
                   ),
                 )
-              : _weatherData == null || _weatherData!.items?.isEmpty == true
+              : _weatherData == null || _weatherData!.data == null || _weatherData!.data!.items.isEmpty
                   ? const Center(child: Text('No weather data available'))
                   : RefreshIndicator(
                       onRefresh: _loadWeatherData,
                       child: ListView.builder(
                         padding: const EdgeInsets.all(16),
-                        itemCount: _weatherData!.items!.length,
+                        itemCount: _weatherData!.data!.items.length,
                         itemBuilder: (context, index) {
-                          final weatherItem = _weatherData!.items![index];
-                          return WeatherCard(weatherItem: weatherItem);
+                          final weatherItem = _weatherData!.data!.items[index];
+                          return WeatherCard(
+                            weatherItem: weatherItem,
+                            areaMetadata: _weatherData!.data!.areaMetadata,
+                          );
                         },
                       ),
                     ),
@@ -91,10 +95,12 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
 class WeatherCard extends StatelessWidget {
   final WeatherItem weatherItem;
+  final BuiltList<AreaMetadata> areaMetadata;
   
   const WeatherCard({
     super.key,
     required this.weatherItem,
+    required this.areaMetadata,
   });
 
   @override
@@ -107,57 +113,53 @@ class WeatherCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              weatherItem.area ?? 'Unknown location',
-              style: Theme.of(context).textTheme.titleLarge,
+              'Weather updated: ${weatherItem.updateTimestamp}',
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            if (weatherItem.forecast != null && weatherItem.forecast!.forecast != null)
-              _buildForecastDetails(context, weatherItem.forecast!),
-            const SizedBox(height: 8),
-            if (weatherItem.areaMetadata != null && weatherItem.areaMetadata!.isNotEmpty)
-              _buildAreaMetadata(context, weatherItem.areaMetadata!.first),
+            Text(
+              'Valid period: ${weatherItem.validPeriod.start} - ${weatherItem.validPeriod.end}',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 16),
+            if (weatherItem.forecasts.isNotEmpty)
+              _buildForecastList(context, weatherItem.forecasts),
           ],
         ),
       ),
     );
   }
   
-  Widget _buildForecastDetails(BuildContext context, Forecast forecast) {
+  Widget _buildForecastList(BuildContext context, BuiltList<Forecast> forecasts) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Forecast: ${forecast.forecast}',
-          style: Theme.of(context).textTheme.bodyMedium,
+          'Forecasts',
+          style: Theme.of(context).textTheme.titleMedium,
         ),
-        if (forecast.relativeHumidity != null)
-          Text(
-            'Humidity: ${forecast.relativeHumidity!.low} - ${forecast.relativeHumidity!.high}%',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        if (forecast.temperature != null)
-          Text(
-            'Temperature: ${forecast.temperature!.low}°C - ${forecast.temperature!.high}°C',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+        const SizedBox(height: 8),
+        ...forecasts.map((forecast) => _buildForecastItem(context, forecast)).toList(),
       ],
     );
   }
   
-  Widget _buildAreaMetadata(BuildContext context, AreaMetadata metadata) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Area: ${metadata.name}',
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-        if (metadata.labelLocation != null)
+  Widget _buildForecastItem(BuildContext context, Forecast forecast) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Text(
-            'Coordinates: ${metadata.labelLocation!.latitude}, ${metadata.labelLocation!.longitude}',
-            style: Theme.of(context).textTheme.bodySmall,
+            'Area: ${forecast.area}',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
-      ],
+          Text(
+            'Forecast: ${forecast.forecast}',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ],
+      ),
     );
   }
 }

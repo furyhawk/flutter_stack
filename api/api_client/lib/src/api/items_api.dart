@@ -4,12 +4,10 @@
 
 import 'dart:async';
 
-import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
 import 'package:api_client/src/api_util.dart';
-import 'package:api_client/src/model/http_validation_error.dart';
 import 'package:api_client/src/model/item_create.dart';
 import 'package:api_client/src/model/item_public.dart';
 import 'package:api_client/src/model/item_update.dart';

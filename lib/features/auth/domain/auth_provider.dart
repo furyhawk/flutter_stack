@@ -39,7 +39,7 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
     
     try {
-      final token = await _authRepository.login(
+      await _authRepository.login(
         username: username,
         password: password,
       );
@@ -107,11 +107,16 @@ class AuthProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     
-    final token = await SecureStorageHelper.getToken();
-    
-    if (token != null && token.isNotEmpty) {
-      _isAuthenticated = true;
-    } else {
+    try {
+      final token = await SecureStorageHelper.getToken();
+      
+      if (token != null && token.isNotEmpty) {
+        _isAuthenticated = true;
+      } else {
+        _isAuthenticated = false;
+      }
+    } catch (e) {
+      _errorMessage = "Authentication error: ${e.toString()}";
       _isAuthenticated = false;
     }
     

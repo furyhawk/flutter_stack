@@ -6,6 +6,7 @@ import 'package:flutter_stack/features/auth/domain/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
+  // This ensures that plugin services are initialized before calling any platform channels
   WidgetsFlutterBinding.ensureInitialized();
   
   // Set preferred orientations

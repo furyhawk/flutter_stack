@@ -106,13 +106,13 @@ class _ItemsScreenState extends State<ItemsScreen> {
                 )
               : RefreshIndicator(
                   onRefresh: () => _loadItems(refresh: true),
-                  child: _items?.items?.isEmpty == true
+                  child: _items == null || _items!.data.isEmpty
                       ? const Center(child: Text('No items found'))
                       : ListView.builder(
                           padding: const EdgeInsets.all(16),
-                          itemCount: _items?.items?.length ?? 0,
+                          itemCount: _items?.data.length ?? 0,
                           itemBuilder: (context, index) {
-                            final item = _items!.items![index];
+                            final item = _items!.data[index];
                             return ItemCard(
                               item: item,
                               onDeleted: () => _loadItems(refresh: true),
@@ -232,7 +232,7 @@ class _ItemCardState extends State<ItemCard> {
               children: [
                 Expanded(
                   child: Text(
-                    widget.item.title ?? 'No Title',
+                    widget.item.title,
                     style: Theme.of(context).textTheme.titleLarge,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -264,7 +264,7 @@ class _ItemCardState extends State<ItemCard> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Owner: ${widget.item.owner?.fullName ?? 'Unknown'}',
+              'Owner ID: ${widget.item.ownerId}',
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
@@ -299,7 +299,7 @@ class _ItemCardState extends State<ItemCard> {
     });
     
     try {
-      await _itemsRepository.deleteItem(widget.item.id ?? '');
+      await _itemsRepository.deleteItem(widget.item.id);
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -367,7 +367,7 @@ class _ItemCardState extends State<ItemCard> {
               
               try {
                 await _itemsRepository.updateItem(
-                  itemId: widget.item.id ?? '',
+                  itemId: widget.item.id,
                   title: titleController.text,
                   description: descriptionController.text,
                 );

@@ -1,6 +1,6 @@
 /// Configuration class for the app
 class AppConfig {
-  static const String apiBaseUrl = 'https://api.example.com';
+  static const String apiBaseUrl = 'https://service.furyhawk.lol';
   
   // API endpoints
   static const String loginEndpoint = '/login';

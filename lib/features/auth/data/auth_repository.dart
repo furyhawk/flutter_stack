@@ -12,11 +12,11 @@ class AuthRepository {
   /// Login with username and password
   Future<Token> login({required String username, required String password}) async {
     try {
-      final response = await _apiService.loginApi.loginLoginPost(
+      final response = await _apiService.loginApi.loginLoginAccessToken(
         username: username,
         password: password,
       );
-      final token = response.data;
+      final token = response.data!;
       
       // Store the token for future requests
       _apiService.setToken(token.accessToken);
@@ -39,16 +39,16 @@ class AuthRepository {
     required String fullName,
   }) async {
     try {
-      final userRegister = UserRegister((b) => b
-        ..email = email
-        ..password = password
-        ..fullName = fullName);
-      
-      final response = await _apiService.usersApi.usersRegisterPost(
-        userRegister: userRegister,
+      final response = await _apiService.usersApi.usersCreateUser(
+        userCreate: UserCreate((b) => b
+          ..email = email
+          ..password = password
+          ..fullName = fullName
+          ..isActive = true
+          ..isSuperuser = false),
       );
       
-      return response.data;
+      return response.data!;
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {

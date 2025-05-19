@@ -8,11 +8,13 @@ class WeatherRepository {
   
   WeatherRepository(this._apiService);
   
-  /// Get weather data
-  Future<WeatherResponse> getWeatherData() async {
+  /// Get weather data from the API
+  Future<WeatherResponse> getWeatherData({String? date}) async {
     try {
-      final response = await _apiService.weatherApi.weatherGet();
-      return response.data;
+      final response = await _apiService.weatherApi.weatherGetTwoHourForecast(
+        date: date,
+      );
+      return response.data!;
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
@@ -24,7 +26,11 @@ class WeatherRepository {
   Exception _handleDioError(DioException e) {
     if (e.response != null) {
       if (e.response!.statusCode == 401) {
-        return Exception('Authentication required: Please log in');
+        return Exception('Authentication failed: Please log in again');
+      } else if (e.response!.statusCode == 400) {
+        return Exception('Bad request: Please check your inputs');
+      } else if (e.response!.statusCode == 404) {
+        return Exception('Weather data not found');
       } else if (e.response!.statusCode == 500) {
         return Exception('Server error: Please try again later');
       }

@@ -23,10 +23,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _loadProfile();
+    _loadUserProfile();
   }
   
-  Future<void> _loadProfile() async {
+  Future<void> _loadUserProfile() async {
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -34,13 +34,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     
     try {
       final user = await _profileRepository.getCurrentUser();
-      
       setState(() {
         _user = user;
       });
-      
-      // Update the user in the provider
-      context.read<AuthProvider>().setCurrentUser(user);
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
@@ -52,37 +48,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
   
-  void _logout() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.of(context).pop();
-              
-              await context.read<AuthProvider>().logout();
-              
-              if (mounted) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  (route) => false,
-                );
-              }
-            },
-            child: const Text('Logout'),
-          ),
-        ],
-      ),
-    );
-  }
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,7 +56,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: _logout,
+            onPressed: () async {
+              await context.read<AuthProvider>().logout();
+              if (!mounted) return;
+              
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const LoginScreen()),
+                (route) => false,
+              );
+            },
           ),
         ],
       ),
@@ -109,94 +82,95 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton(
-                        onPressed: _loadProfile,
+                        onPressed: _loadUserProfile,
                         child: const Text('Retry'),
                       ),
                     ],
                   ),
                 )
               : _user == null
-                  ? const Center(child: Text('No profile data available'))
-                  : SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Center(
-                            child: Column(
-                              children: [
-                                const CircleAvatar(
-                                  radius: 50,
-                                  child: Icon(Icons.person, size: 50),
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  _user!.fullName ?? 'No Name',
-                                  style: Theme.of(context).textTheme.headlineMedium,
-                                  textAlign: TextAlign.center,
-                                ),
-                                Text(
-                                  _user!.email ?? 'No Email',
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 32),
-                          const Divider(),
-                          const SizedBox(height: 16),
-                          _buildProfileSection(
-                            title: 'Personal Information',
-                            child: Column(
-                              children: [
-                                _buildInfoRow(
-                                  icon: Icons.email, 
-                                  title: 'Email',
-                                  subtitle: _user!.email ?? 'Not provided',
-                                ),
-                                const SizedBox(height: 8),
-                                _buildInfoRow(
-                                  icon: Icons.person_outline, 
-                                  title: 'Full Name',
-                                  subtitle: _user!.fullName ?? 'Not provided',
-                                ),
-                                const SizedBox(height: 8),
-                                _buildInfoRow(
-                                  icon: Icons.verified_user, 
-                                  title: 'User ID',
-                                  subtitle: _user!.id ?? 'Unknown',
-                                ),
-                                const SizedBox(height: 8),
-                                _buildInfoRow(
-                                  icon: Icons.admin_panel_settings, 
-                                  title: 'Role',
-                                  subtitle: _user!.isAdmin == true ? 'Admin' : 'User',
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Center(
-                            child: ElevatedButton.icon(
-                              onPressed: _showEditProfileDialog,
-                              icon: const Icon(Icons.edit),
-                              label: const Text('Edit Profile'),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Center(
-                            child: ElevatedButton.icon(
-                              onPressed: _showChangePasswordDialog,
-                              icon: const Icon(Icons.lock_outline),
-                              label: const Text('Change Password'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Theme.of(context).colorScheme.secondary,
-                                foregroundColor: Theme.of(context).colorScheme.onSecondary,
+                  ? const Center(child: Text('No user data available'))
+                  : RefreshIndicator(
+                      onRefresh: _loadUserProfile,
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Center(
+                              child: Column(
+                                children: [
+                                  const CircleAvatar(
+                                    radius: 50,
+                                    child: Icon(Icons.person, size: 50),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    _user!.fullName ?? 'No Name',
+                                    style: Theme.of(context).textTheme.headlineSmall,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    _user!.email,
+                                    style: Theme.of(context).textTheme.bodyLarge,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 32),
+                            const Divider(),
+                            const SizedBox(height: 16),
+                            _buildProfileSection(
+                              title: 'Personal Information',
+                              child: Column(
+                                children: [
+                                  _buildInfoRow(
+                                    icon: Icons.email,
+                                    title: 'Email',
+                                    subtitle: _user!.email,
+                                  ),
+                                  _buildInfoRow(
+                                    icon: Icons.person_outline,
+                                    title: 'Full Name',
+                                    subtitle: _user!.fullName ?? 'Not provided',
+                                  ),
+                                  _buildInfoRow(
+                                    icon: Icons.fingerprint,
+                                    title: 'User ID',
+                                    subtitle: _user!.id,
+                                  ),
+                                  _buildInfoRow(
+                                    icon: Icons.admin_panel_settings, 
+                                    title: 'Role',
+                                    subtitle: _user!.isSuperuser == true ? 'Admin' : 'User',
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Center(
+                              child: ElevatedButton.icon(
+                                onPressed: _showEditProfileDialog,
+                                icon: const Icon(Icons.edit),
+                                label: const Text('Edit Profile'),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Center(
+                              child: ElevatedButton.icon(
+                                onPressed: _showChangePasswordDialog,
+                                icon: const Icon(Icons.lock_outline),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                                  foregroundColor: Theme.of(context).colorScheme.onSecondary,
+                                ),
+                                label: const Text('Change Password'),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
     );
@@ -212,7 +186,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
         Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -228,33 +202,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String title,
     required String subtitle,
   }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              Text(
-                subtitle,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: Theme.of(context).colorScheme.primary),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                Text(
+                  subtitle,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
   
   void _showEditProfileDialog() {
-    final fullNameController = TextEditingController(text: _user!.fullName);
-    final emailController = TextEditingController(text: _user!.email);
+    final nameController = TextEditingController(text: _user!.fullName);
     
     showDialog(
       context: context,
@@ -264,18 +240,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
-              controller: fullNameController,
+              controller: nameController,
               decoration: const InputDecoration(
                 labelText: 'Full Name',
               ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-              ),
-              enabled: false, // Email can't be changed in this example
             ),
           ],
         ),
@@ -286,36 +254,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           TextButton(
             onPressed: () async {
-              if (fullNameController.text.isEmpty) {
+              final name = nameController.text.trim();
+              
+              if (name.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Full name cannot be empty')),
+                  const SnackBar(content: Text('Name cannot be empty')),
                 );
                 return;
               }
               
               Navigator.of(context).pop();
               
+              setState(() {
+                _isLoading = true;
+              });
+              
               try {
-                setState(() {
-                  _isLoading = true;
-                });
-                
-                await _profileRepository.updateProfile(
-                  fullName: fullNameController.text,
+                final updatedUser = await _profileRepository.updateProfile(
+                  fullName: name,
                 );
-                
-                await _loadProfile();
                 
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Profile updated successfully')),
                   );
+                  
+                  setState(() {
+                    _user = updatedUser;
+                    _isLoading = false;
+                  });
                 }
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Error: ${e.toString()}')),
                   );
+                  
                   setState(() {
                     _isLoading = false;
                   });
@@ -373,16 +347,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           TextButton(
             onPressed: () async {
-              if (currentPasswordController.text.isEmpty ||
-                  newPasswordController.text.isEmpty ||
-                  confirmPasswordController.text.isEmpty) {
+              final currentPassword = currentPasswordController.text;
+              final newPassword = newPasswordController.text;
+              final confirmPassword = confirmPasswordController.text;
+              
+              if (currentPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('All fields are required')),
                 );
                 return;
               }
               
-              if (newPasswordController.text != confirmPasswordController.text) {
+              if (newPassword != confirmPassword) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('New passwords do not match')),
                 );
@@ -391,37 +367,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
               
               Navigator.of(context).pop();
               
+              setState(() {
+                _isLoading = true;
+              });
+              
               try {
-                setState(() {
-                  _isLoading = true;
-                });
-                
                 await _profileRepository.updatePassword(
-                  currentPassword: currentPasswordController.text,
-                  newPassword: newPasswordController.text,
+                  currentPassword: currentPassword,
+                  newPassword: newPassword,
                 );
-                
-                setState(() {
-                  _isLoading = false;
-                });
                 
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Password updated successfully')),
+                    const SnackBar(content: Text('Password changed successfully')),
                   );
+                  
+                  setState(() {
+                    _isLoading = false;
+                  });
                 }
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Error: ${e.toString()}')),
                   );
+                  
                   setState(() {
                     _isLoading = false;
                   });
                 }
               }
             },
-            child: const Text('Update'),
+            child: const Text('Change'),
           ),
         ],
       ),

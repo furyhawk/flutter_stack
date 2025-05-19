@@ -11,12 +11,12 @@ class ItemsRepository {
   /// Get all items
   Future<ItemsPublic> getAllItems({int skip = 0, int limit = 10}) async {
     try {
-      final response = await _apiService.itemsApi.itemsGet(
+      final response = await _apiService.itemsApi.itemsReadItems(
         skip: skip,
         limit: limit,
       );
       
-      return response.data;
+      return response.data!;
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
@@ -27,11 +27,11 @@ class ItemsRepository {
   /// Get a specific item by ID
   Future<ItemPublic> getItem(String itemId) async {
     try {
-      final response = await _apiService.itemsApi.itemsItemIdGet(
-        itemId: itemId,
+      final response = await _apiService.itemsApi.itemsReadItem(
+        id: itemId,
       );
       
-      return response.data;
+      return response.data!;
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
@@ -49,11 +49,11 @@ class ItemsRepository {
         ..title = title
         ..description = description);
       
-      final response = await _apiService.itemsApi.itemsPost(
+      final response = await _apiService.itemsApi.itemsCreateItem(
         itemCreate: itemCreate,
       );
       
-      return response.data;
+      return response.data!;
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
@@ -72,12 +72,12 @@ class ItemsRepository {
         ..title = title
         ..description = description);
       
-      final response = await _apiService.itemsApi.itemsItemIdPut(
-        itemId: itemId,
+      final response = await _apiService.itemsApi.itemsUpdateItem(
+        id: itemId,
         itemUpdate: itemUpdate,
       );
       
-      return response.data;
+      return response.data!;
     } on DioException catch (e) {
       throw _handleDioError(e);
     } catch (e) {
@@ -88,8 +88,8 @@ class ItemsRepository {
   /// Delete an item
   Future<void> deleteItem(String itemId) async {
     try {
-      await _apiService.itemsApi.itemsItemIdDelete(
-        itemId: itemId,
+      await _apiService.itemsApi.itemsDeleteItem(
+        id: itemId,
       );
     } on DioException catch (e) {
       throw _handleDioError(e);
@@ -102,9 +102,9 @@ class ItemsRepository {
   Exception _handleDioError(DioException e) {
     if (e.response != null) {
       if (e.response!.statusCode == 401) {
-        return Exception('Authentication required: Please log in');
+        return Exception('Authentication required: Please login');
       } else if (e.response!.statusCode == 403) {
-        return Exception('Access denied: You don\'t have permission for this action');
+        return Exception('Forbidden: You do not have permission to access this resource');
       } else if (e.response!.statusCode == 404) {
         return Exception('Not found: The requested item does not exist');
       } else if (e.response!.statusCode == 400) {
