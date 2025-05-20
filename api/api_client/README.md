@@ -88,15 +88,20 @@ Class | Method | HTTP request | Description
 [*UsersApi*](doc/UsersApi.md) | [**usersUpdateUserMe**](doc/UsersApi.md#usersupdateuserme) | **PATCH** /api/v1/users/me | Update User Me
 [*UtilsApi*](doc/UtilsApi.md) | [**utilsHealthCheck**](doc/UtilsApi.md#utilshealthcheck) | **GET** /api/v1/utils/health-check/ | Health Check
 [*UtilsApi*](doc/UtilsApi.md) | [**utilsTestEmail**](doc/UtilsApi.md#utilstestemail) | **POST** /api/v1/utils/test-email/ | Test Email
+[*WeatherApi*](doc/WeatherApi.md) | [**weatherGetTwoHourForecast**](doc/WeatherApi.md#weathergettwohourforecast) | **GET** /api/v1/weather/two-hour-forecast | Get Two Hour Forecast
 
 
 ## Documentation For Models
 
+ - [AreaMetadata](doc/AreaMetadata.md)
+ - [Forecast](doc/Forecast.md)
+ - [ForecastPeriod](doc/ForecastPeriod.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [ItemCreate](doc/ItemCreate.md)
  - [ItemPublic](doc/ItemPublic.md)
  - [ItemUpdate](doc/ItemUpdate.md)
  - [ItemsPublic](doc/ItemsPublic.md)
+ - [LabelLocation](doc/LabelLocation.md)
  - [Message](doc/Message.md)
  - [NewPassword](doc/NewPassword.md)
  - [PrivateUserCreate](doc/PrivateUserCreate.md)
@@ -110,6 +115,9 @@ Class | Method | HTTP request | Description
  - [UsersPublic](doc/UsersPublic.md)
  - [ValidationError](doc/ValidationError.md)
  - [ValidationErrorLocInner](doc/ValidationErrorLocInner.md)
+ - [WeatherData](doc/WeatherData.md)
+ - [WeatherItem](doc/WeatherItem.md)
+ - [WeatherResponse](doc/WeatherResponse.md)
 
 
 ## Documentation For Authorization

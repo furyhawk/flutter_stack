@@ -14,11 +14,15 @@ import 'package:built_value/iso_8601_date_time_serializer.dart';
 import 'package:api_client/src/date_serializer.dart';
 import 'package:api_client/src/model/date.dart';
 
+import 'package:api_client/src/model/area_metadata.dart';
+import 'package:api_client/src/model/forecast.dart';
+import 'package:api_client/src/model/forecast_period.dart';
 import 'package:api_client/src/model/http_validation_error.dart';
 import 'package:api_client/src/model/item_create.dart';
 import 'package:api_client/src/model/item_public.dart';
 import 'package:api_client/src/model/item_update.dart';
 import 'package:api_client/src/model/items_public.dart';
+import 'package:api_client/src/model/label_location.dart';
 import 'package:api_client/src/model/message.dart';
 import 'package:api_client/src/model/new_password.dart';
 import 'package:api_client/src/model/private_user_create.dart';
@@ -32,15 +36,22 @@ import 'package:api_client/src/model/user_update_me.dart';
 import 'package:api_client/src/model/users_public.dart';
 import 'package:api_client/src/model/validation_error.dart';
 import 'package:api_client/src/model/validation_error_loc_inner.dart';
+import 'package:api_client/src/model/weather_data.dart';
+import 'package:api_client/src/model/weather_item.dart';
+import 'package:api_client/src/model/weather_response.dart';
 
 part 'serializers.g.dart';
 
 @SerializersFor([
+  AreaMetadata,
+  Forecast,
+  ForecastPeriod,
   HTTPValidationError,
   ItemCreate,
   ItemPublic,
   ItemUpdate,
   ItemsPublic,
+  LabelLocation,
   Message,
   NewPassword,
   PrivateUserCreate,
@@ -54,6 +65,9 @@ part 'serializers.g.dart';
   UsersPublic,
   ValidationError,
   ValidationErrorLocInner,
+  WeatherData,
+  WeatherItem,
+  WeatherResponse,
 ])
 Serializers serializers = (_$serializers.toBuilder()
       ..add(const OneOfSerializer())
