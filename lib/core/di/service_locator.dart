@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stack/core/network/api_client_provider.dart';
 import 'package:flutter_stack/data/repositories/item_repository.dart';
 import 'package:flutter_stack/data/repositories/user_repository.dart';
+import 'package:flutter_stack/data/repositories/weather_repository.dart';
 
 /// Service locator for dependency injection
 class ServiceLocator {
@@ -55,6 +56,10 @@ void initDependencies() {
   
   serviceLocator.registerSingleton<UserRepository>(
     () => UserRepository(serviceLocator.get<ApiClientProvider>()),
+  );
+  
+  serviceLocator.registerSingleton<WeatherRepository>(
+    () => WeatherRepository(serviceLocator.get<ApiClientProvider>()),
   );
 }
 

@@ -5,10 +5,13 @@ import 'package:flutter_stack/core/network/api_client_provider.dart';
 import 'package:flutter_stack/core/theme/app_theme.dart';
 import 'package:flutter_stack/data/repositories/item_repository.dart';
 import 'package:flutter_stack/data/repositories/user_repository.dart';
+import 'package:flutter_stack/data/repositories/weather_repository.dart';
 import 'package:flutter_stack/domain/services/auth_service.dart';
 import 'package:flutter_stack/domain/services/item_service.dart';
+import 'package:flutter_stack/domain/services/weather_service.dart';
 import 'package:flutter_stack/domain/usecases/auth_usecases.dart';
 import 'package:flutter_stack/domain/usecases/item_usecases.dart';
+import 'package:flutter_stack/domain/usecases/weather_usecases.dart';
 import 'package:flutter_stack/presentation/navigation/app_router.dart';
 import 'package:flutter_stack/presentation/screens/home/home_screen.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +43,10 @@ void _initDependencies() {
     () => UserRepository(serviceLocator.get<ApiClientProvider>()),
   );
   
+  serviceLocator.registerSingleton<WeatherRepository>(
+    () => WeatherRepository(serviceLocator.get<ApiClientProvider>()),
+  );
+  
   // Register use cases
   serviceLocator.registerSingleton<GetItemsUseCase>(
     () => GetItemsUseCase(serviceLocator.get<ItemRepository>()),
@@ -57,6 +64,20 @@ void _initDependencies() {
     () => DeleteItemUseCase(serviceLocator.get<ItemRepository>()),
   );
   
+  // Register Weather use cases
+  serviceLocator.registerSingleton<GetWeatherByCityUseCase>(
+    () => GetWeatherByCityUseCase(serviceLocator.get<WeatherRepository>()),
+  );
+  
+  serviceLocator.registerSingleton<GetWeatherByCoordinatesUseCase>(
+    () => GetWeatherByCoordinatesUseCase(serviceLocator.get<WeatherRepository>()),
+  );
+  
+  serviceLocator.registerSingleton<GetWeatherForecastUseCase>(
+    () => GetWeatherForecastUseCase(serviceLocator.get<WeatherRepository>()),
+  );
+  
+  // Register login use cases
   serviceLocator.registerSingleton<LoginUseCase>(
     () => LoginUseCase(serviceLocator.get<UserRepository>()),
   );
@@ -76,6 +97,14 @@ void _initDependencies() {
       registerUseCase: serviceLocator.get<RegisterUseCase>(),
       getCurrentUserUseCase: serviceLocator.get<GetCurrentUserUseCase>(),
       apiClientProvider: serviceLocator.get<ApiClientProvider>(),
+    ),
+  );
+
+  serviceLocator.registerSingleton<WeatherService>(
+    () => WeatherService(
+      getWeatherByCityUseCase: serviceLocator.get<GetWeatherByCityUseCase>(),
+      getWeatherByCoordinatesUseCase: serviceLocator.get<GetWeatherByCoordinatesUseCase>(),
+      getWeatherForecastUseCase: serviceLocator.get<GetWeatherForecastUseCase>(),
     ),
   );
 
@@ -101,6 +130,9 @@ class MainApp extends StatelessWidget {
         ),
         Provider<ItemService>.value(
           value: ServiceLocator.instance.get<ItemService>(),
+        ),
+        ChangeNotifierProvider<WeatherService>.value(
+          value: ServiceLocator.instance.get<WeatherService>(),
         ),
       ],
       child: MaterialApp(

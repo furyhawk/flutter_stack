@@ -103,6 +103,13 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Home'),
         actions: [
           IconButton(
+            icon: const Icon(Icons.cloud),
+            tooltip: 'Weather',
+            onPressed: () {
+              Navigator.of(context).pushNamed('/weather');
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.logout),
             onPressed: _logout,
             tooltip: 'Logout',

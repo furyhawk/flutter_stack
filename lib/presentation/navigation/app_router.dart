@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stack/domain/services/auth_service.dart';
 import 'package:flutter_stack/presentation/screens/auth/login_screen.dart';
 import 'package:flutter_stack/presentation/screens/home/home_screen.dart';
+import 'package:flutter_stack/presentation/screens/weather/weather_screen.dart';
 import 'package:provider/provider.dart';
 
 class AppRouter {
@@ -13,6 +14,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case '/home':
         return MaterialPageRoute(builder: (_) => const HomeScreen());
+      case '/weather':
+        return MaterialPageRoute(builder: (_) => const WeatherScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(
