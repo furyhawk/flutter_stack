@@ -85,4 +85,89 @@ class WeatherRepository extends BaseRepository {
       }
     });
   }
+
+  /// Get demo weather data (for testing when API key isn't available)
+  Future<ApiResult<Weather>> getDemoWeather(String city) async {
+    return safeApiCall(() async {
+      // Simulate network delay
+      await Future.delayed(const Duration(seconds: 1));
+      
+      // Create a mock Weather object
+      final weather = Weather(
+        cityName: city,
+        temperature: 293.15, // 20°C in Kelvin
+        feelsLike: 291.15,   // 18°C in Kelvin
+        humidity: 65,
+        windSpeed: 5.2,
+        condition: WeatherCondition.cloudy,
+        description: 'Partly cloudy',
+        iconCode: '03d',
+        timestamp: DateTime.now(),
+      );
+      
+      return weather;
+    });
+  }
+  
+  /// Get demo forecast data (for testing when API key isn't available)
+  Future<ApiResult<List<Weather>>> getDemoForecast(String city) async {
+    return safeApiCall(() async {
+      // Simulate network delay
+      await Future.delayed(const Duration(seconds: 1));
+      
+      // Create mock forecast data for 5 days
+      final now = DateTime.now();
+      final forecast = List.generate(5, (index) {
+        final date = now.add(Duration(days: index + 1));
+        
+        // Generate different weather conditions based on index
+        final WeatherCondition condition;
+        final String description;
+        
+        switch (index % 5) {
+          case 0:
+            condition = WeatherCondition.cloudy;
+            description = 'Partly cloudy';
+            break;
+          case 1:
+            condition = WeatherCondition.rainy;
+            description = 'Light rain';
+            break;
+          case 2:
+            condition = WeatherCondition.clear;
+            description = 'Sunny';
+            break;
+          case 3:
+            condition = WeatherCondition.stormy;
+            description = 'Thunderstorms';
+            break;
+          case 4:
+            condition = WeatherCondition.foggy;
+            description = 'Foggy morning';
+            break;
+          default:
+            condition = WeatherCondition.unknown;
+            description = 'Unknown';
+        }
+        
+        // Generate a temperature with some variation
+        final baseTemp = 293.15; // 20°C in Kelvin
+        final variation = (index - 2) * 3.0; // -6°C to +6°C variation
+        
+        return Weather(
+          cityName: city,
+          temperature: baseTemp + variation,
+          feelsLike: baseTemp + variation - 2,
+          humidity: 60 + index * 5,
+          windSpeed: 4.0 + index * 0.8,
+          condition: condition,
+          description: description,
+          iconCode: '0${index + 1}d',
+          timestamp: date,
+        );
+      });
+      
+      return forecast;
+    });
+  }
 }

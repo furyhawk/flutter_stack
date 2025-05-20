@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_stack/domain/services/weather_service.dart';
+import 'package:flutter_stack/domain/services/services.dart';
+import 'package:flutter_stack/presentation/utils/weather_icons.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class WeatherScreen extends StatefulWidget {
@@ -10,8 +12,17 @@ class WeatherScreen extends StatefulWidget {
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
-  final TextEditingController _searchController = TextEditingController();
-  String _selectedCity = '';
+  final TextEditingController _searchController = TextEditingController(text: 'London');
+  String _selectedCity = 'London';
+
+  @override
+  void initState() {
+    super.initState();
+    // Load weather data for London by default when screen opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WeatherService>().getFullWeatherData(_selectedCity);
+    });
+  }
 
   @override
   void dispose() {
@@ -28,390 +39,413 @@ class _WeatherScreenState extends State<WeatherScreen> {
       context.read<WeatherService>().getFullWeatherData(city);
     }
   }
+  
+  void _toggleTemperatureUnit() {
+    final preferencesService = context.read<PreferencesService>();
+    preferencesService.setUseCelsius(!preferencesService.useCelsius);
+  }
+  
+  // Helper method to create weather data items with consistent style
+  Widget _weatherDataItem(IconData icon, String label, String value) {
+    return Column(
+      children: [
+        Icon(icon, size: 24.0),
+        const SizedBox(height: 4.0),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12.0,
+            color: Colors.grey[600],
+          ),
+        ),
+        const SizedBox(height: 4.0),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Weather'),
-        elevation: 0,
+        actions: [
+          // Get current location button
+          IconButton(
+            icon: const Icon(Icons.my_location),
+            tooltip: 'Get weather for current location',
+            onPressed: () {
+              context.read<WeatherService>().getWeatherForCurrentLocation();
+            },
+          ),
+          // Temperature unit toggle
+          Consumer<PreferencesService>(
+            builder: (context, preferencesService, child) {
+              return IconButton(
+                icon: Icon(preferencesService.useCelsius 
+                    ? Icons.ac_unit 
+                    : Icons.local_fire_department),
+                tooltip: preferencesService.useCelsius 
+                    ? 'Switch to Fahrenheit' 
+                    : 'Switch to Celsius',
+                onPressed: _toggleTemperatureUnit,
+              );
+            }
+          ),
+        ],
       ),
       body: Consumer<WeatherService>(
         builder: (context, weatherService, child) {
+          // Build the search bar
+          Widget searchBar = Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter city name',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      prefixIcon: const Icon(Icons.search),
+                    ),
+                    onSubmitted: (_) => _searchCity(),
+                  ),
+                ),
+                const SizedBox(width: 8.0),
+                ElevatedButton(
+                  onPressed: _searchCity,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 15.0),
+                  ),
+                  child: const Text('Search'),
+                ),
+              ],
+            ),
+          );
+
+          // Build quick cities
+          Widget quickCities = Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Default cities
+                const Text(
+                  'Quick Search',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                  ),
+                ),
+                const SizedBox(height: 8.0),
+                SizedBox(
+                  height: 40.0,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      for (final city in weatherService.defaultCities)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: ActionChip(
+                            avatar: const Icon(Icons.location_city, size: 16),
+                            label: Text(city),
+                            onPressed: () {
+                              _searchController.text = city;
+                              setState(() {
+                                _selectedCity = city;
+                              });
+                              weatherService.getFullWeatherData(city);
+                            },
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                
+                // Recent searches
+                if (weatherService.recentCities.isNotEmpty) ...[
+                  const SizedBox(height: 16.0),
+                  const Text(
+                    'Recent Searches',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.0,
+                    ),
+                  ),
+                  const SizedBox(height: 8.0),
+                  SizedBox(
+                    height: 40.0,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        for (final city in weatherService.recentCities)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: ActionChip(
+                              avatar: const Icon(Icons.history, size: 16),
+                              label: Text(city),
+                              onPressed: () {
+                                _searchController.text = city;
+                                setState(() {
+                                  _selectedCity = city;
+                                });
+                                weatherService.getFullWeatherData(city);
+                              },
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          );
+
+          // Weather content based on status
+          Widget weatherContent;
+          
+          switch (weatherService.status) {
+            case WeatherServiceStatus.initial:
+              weatherContent = const Center(
+                child: Text('Search for a city to see the weather data'),
+              );
+              break;
+            case WeatherServiceStatus.loading:
+              weatherContent = Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Loading weather for $_selectedCity...',
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+              break;
+            case WeatherServiceStatus.error:
+              weatherContent = Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+                    const SizedBox(height: 16),
+                    Text(
+                      weatherService.error ?? 'An error occurred',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: () {
+                        weatherService.getFullWeatherData(_selectedCity);
+                      },
+                      child: const Text('Try Again'),
+                    ),
+                  ],
+                ),
+              );
+              break;
+            case WeatherServiceStatus.loaded:
+              if (weatherService.currentWeather == null) {
+                weatherContent = const Center(
+                  child: Text('No weather data available'),
+                );
+              } else {
+                final weather = weatherService.currentWeather!;
+                final forecast = weatherService.forecast;
+                
+                weatherContent = SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Current weather card
+                        Card(
+                          elevation: 4.0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          color: Theme.of(context).colorScheme.surface,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      weather.cityName,
+                                      style: Theme.of(context).textTheme.headlineSmall,
+                                    ),
+                                    Text(
+                                      DateFormat('EEE, MMM d').format(weather.timestamp),
+                                      style: Theme.of(context).textTheme.bodyMedium,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16.0),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Consumer<PreferencesService>(
+                                          builder: (context, preferencesService, child) {
+                                            return Text(
+                                              preferencesService.useCelsius
+                                                  ? weather.formattedTemperatureCelsius
+                                                  : weather.formattedTemperatureFahrenheit,
+                                              style: Theme.of(context).textTheme.displaySmall,
+                                            );
+                                          },
+                                        ),
+                                        Consumer<PreferencesService>(
+                                          builder: (context, preferencesService, child) {
+                                            return Text(
+                                              'Feels like: ${preferencesService.useCelsius 
+                                                  ? '${(weather.feelsLike - 273.15).toStringAsFixed(1)}°C'
+                                                  : '${((weather.feelsLike - 273.15) * 9 / 5 + 32).toStringAsFixed(1)}°F'}',
+                                              style: Theme.of(context).textTheme.bodyMedium,
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        WeatherIcons.getIconWidget(
+                                          weather.condition, 
+                                          size: 64.0,
+                                          color: Theme.of(context).colorScheme.primary,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          weather.description,
+                                          style: Theme.of(context).textTheme.bodyMedium,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16.0),
+                                const Divider(),
+                                const SizedBox(height: 8.0),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: [
+                                    _weatherDataItem(
+                                      Icons.water_drop,
+                                      'Humidity',
+                                      '${weather.humidity}%',
+                                    ),
+                                    _weatherDataItem(
+                                      Icons.air,
+                                      'Wind',
+                                      '${weather.windSpeed.toStringAsFixed(1)} m/s',
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        
+                        // Forecast section
+                        if (forecast != null && forecast.isNotEmpty) ...[
+                          const SizedBox(height: 24.0),
+                          Text(
+                            'Forecast',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: 8.0),
+                          SizedBox(
+                            height: 160,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: forecast.length,
+                              itemBuilder: (context, index) {
+                                final day = forecast[index];
+                                return Card(
+                                  margin: const EdgeInsets.only(right: 12.0),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          DateFormat('E, MMM d').format(day.timestamp),
+                                          style: Theme.of(context).textTheme.bodyMedium,
+                                        ),
+                                        const SizedBox(height: 8.0),
+                                        WeatherIcons.getIconWidget(
+                                          day.condition,
+                                          size: 32.0,
+                                          color: Theme.of(context).colorScheme.primary,
+                                        ),
+                                        const SizedBox(height: 8.0),
+                                        Consumer<PreferencesService>(
+                                          builder: (context, preferencesService, child) {
+                                            return Text(
+                                              preferencesService.useCelsius
+                                                  ? day.formattedTemperatureCelsius
+                                                  : day.formattedTemperatureFahrenheit,
+                                              style: Theme.of(context).textTheme.bodyLarge,
+                                            );
+                                          },
+                                        ),
+                                        const SizedBox(height: 4.0),
+                                        Text(
+                                          day.description,
+                                          style: Theme.of(context).textTheme.bodySmall,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                );
+              }
+              break;
+          }
+
           return Column(
             children: [
-              _buildSearchBar(context),
-              _buildQuickCities(context, weatherService),
-              Expanded(
-                child: _buildWeatherContent(context, weatherService),
-              ),
+              searchBar,
+              quickCities,
+              Expanded(child: weatherContent),
             ],
           );
         },
       ),
     );
-  }
-
-  Widget _buildSearchBar(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Enter city name',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                prefixIcon: const Icon(Icons.search),
-                contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
-              ),
-              onSubmitted: (_) => _searchCity(),
-            ),
-          ),
-          const SizedBox(width: 8.0),
-          ElevatedButton(
-            onPressed: _searchCity,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 15.0, horizontal: 16.0),
-            ),
-            child: const Text('Search'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuickCities(BuildContext context, WeatherService weatherService) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Quick Search',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16.0,
-            ),
-          ),
-          const SizedBox(height: 8.0),
-          SizedBox(
-            height: 40.0,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              children: [
-                for (final city in weatherService.defaultCities)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: ActionChip(
-                      label: Text(city),
-                      onPressed: () {
-                        _searchController.text = city;
-                        setState(() {
-                          _selectedCity = city;
-                        });
-                        weatherService.getFullWeatherData(city);
-                      },
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          if (weatherService.recentCities.isNotEmpty) ...[
-            const SizedBox(height: 16.0),
-            const Text(
-              'Recent Searches',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16.0,
-              ),
-            ),
-            const SizedBox(height: 8.0),
-            SizedBox(
-              height: 40.0,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  for (final city in weatherService.recentCities)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: ActionChip(
-                        avatar: const Icon(Icons.history, size: 16.0),
-                        label: Text(city),
-                        onPressed: () {
-                          _searchController.text = city;
-                          setState(() {
-                            _selectedCity = city;
-                          });
-                          weatherService.getFullWeatherData(city);
-                        },
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWeatherContent(BuildContext context, WeatherService weatherService) {
-    switch (weatherService.status) {
-      case WeatherServiceStatus.initial:
-        return const Center(
-          child: Text(
-            'Search for a city to see the weather',
-            style: TextStyle(fontSize: 18.0),
-          ),
-        );
-      case WeatherServiceStatus.loading:
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      case WeatherServiceStatus.error:
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.error_outline,
-                color: Colors.red,
-                size: 48.0,
-              ),
-              const SizedBox(height: 16.0),
-              Text(
-                weatherService.error ?? 'An error occurred',
-                style: const TextStyle(fontSize: 18.0),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  if (_selectedCity.isNotEmpty) {
-                    weatherService.getFullWeatherData(_selectedCity);
-                  }
-                },
-                child: const Text('Try Again'),
-              ),
-            ],
-          ),
-        );
-      case WeatherServiceStatus.loaded:
-        if (weatherService.currentWeather == null) {
-          return const Center(
-            child: Text(
-              'No weather data available',
-              style: TextStyle(fontSize: 18.0),
-            ),
-          );
-        }
-        return _buildWeatherDetails(context, weatherService);
-    }
-  }
-
-  Widget _buildWeatherDetails(BuildContext context, WeatherService weatherService) {
-    final weather = weatherService.currentWeather!;
-    final forecast = weatherService.forecast;
-    
-    return RefreshIndicator(
-      onRefresh: () async {
-        if (_selectedCity.isNotEmpty) {
-          await weatherService.getFullWeatherData(_selectedCity);
-        }
-      },
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Current weather card
-            Card(
-              elevation: 4.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16.0),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              weather.cityName,
-                              style: const TextStyle(
-                                fontSize: 24.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4.0),
-                            Text(
-                              'Updated: ${_formatDate(weather.timestamp)}',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 12.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Text(
-                          weather.weatherIcon,
-                          style: const TextStyle(fontSize: 48.0),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              weather.formattedTemperatureCelsius,
-                              style: const TextStyle(
-                                fontSize: 36.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4.0),
-                            Text(
-                              'Feels like: ${_formatTemperature(weather.feelsLike)}',
-                              style: const TextStyle(fontSize: 16.0),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              weather.description.isNotEmpty
-                                  ? weather.description[0].toUpperCase() +
-                                      weather.description.substring(1)
-                                  : 'Unknown',
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 4.0),
-                            Text(
-                              'Humidity: ${weather.humidity}%',
-                              style: const TextStyle(fontSize: 14.0),
-                            ),
-                            const SizedBox(height: 2.0),
-                            Text(
-                              'Wind: ${weather.windSpeed.toStringAsFixed(1)} m/s',
-                              style: const TextStyle(fontSize: 14.0),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            
-            // Forecast section (if available)
-            if (forecast != null && forecast.isNotEmpty) ...[
-              const SizedBox(height: 24.0),
-              const Text(
-                'Forecast',
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16.0),
-              SizedBox(
-                height: 180.0,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: forecast.length.clamp(0, 5),
-                  itemBuilder: (context, index) {
-                    final forecastItem = forecast[index];
-                    return Card(
-                      elevation: 2.0,
-                      margin: const EdgeInsets.only(right: 12.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      child: Container(
-                        width: 120.0,
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _formatDayOfWeek(forecastItem.timestamp),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 8.0),
-                            Text(
-                              forecastItem.weatherIcon,
-                              style: const TextStyle(fontSize: 32.0),
-                            ),
-                            const SizedBox(height: 8.0),
-                            Text(
-                              forecastItem.formattedTemperatureCelsius,
-                              style: const TextStyle(
-                                fontSize: 16.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4.0),
-                            Text(
-                              forecastItem.description.isNotEmpty
-                                  ? forecastItem.description[0].toUpperCase() +
-                                      forecastItem.description.substring(1)
-                                  : 'Unknown',
-                              style: const TextStyle(
-                                fontSize: 12.0,
-                                color: Colors.grey,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _formatTemperature(double kelvin) {
-    final celsius = kelvin - 273.15;
-    return '${celsius.toStringAsFixed(1)}°C';
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    if (date.day == now.day && date.month == now.month && date.year == now.year) {
-      return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
-    }
-    return '${date.day}/${date.month}';
-  }
-
-  String _formatDayOfWeek(DateTime date) {
-    final weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return weekdays[date.weekday - 1];
   }
 }

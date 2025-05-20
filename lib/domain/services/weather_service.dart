@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_stack/domain/models/weather/weather_model.dart';
+import 'package:flutter_stack/domain/services/location_service.dart';
 import 'package:flutter_stack/domain/usecases/weather_usecases.dart';
 
 enum WeatherServiceStatus {
@@ -13,14 +14,17 @@ class WeatherService extends ChangeNotifier {
   final GetWeatherByCityUseCase _getWeatherByCityUseCase;
   final GetWeatherByCoordinatesUseCase _getWeatherByCoordinatesUseCase;
   final GetWeatherForecastUseCase _getWeatherForecastUseCase;
+  final LocationService _locationService;
 
   WeatherService({
     required GetWeatherByCityUseCase getWeatherByCityUseCase,
     required GetWeatherByCoordinatesUseCase getWeatherByCoordinatesUseCase,
     required GetWeatherForecastUseCase getWeatherForecastUseCase,
+    required LocationService locationService,
   })  : _getWeatherByCityUseCase = getWeatherByCityUseCase,
         _getWeatherByCoordinatesUseCase = getWeatherByCoordinatesUseCase,
-        _getWeatherForecastUseCase = getWeatherForecastUseCase;
+        _getWeatherForecastUseCase = getWeatherForecastUseCase,
+        _locationService = locationService;
 
   WeatherServiceStatus _status = WeatherServiceStatus.initial;
   WeatherServiceStatus get status => _status;
@@ -154,6 +158,33 @@ class WeatherService extends ChangeNotifier {
     // Keep only the 5 most recent cities
     if (_recentCities.length > 5) {
       _recentCities.removeLast();
+    }
+  }
+  
+  /// Get weather for the user's current location
+  Future<void> getWeatherForCurrentLocation() async {
+    _setLoading();
+    
+    try {
+      // Check location permission
+      final hasPermission = await _locationService.checkLocationPermission();
+      
+      if (!hasPermission) {
+        final permissionGranted = await _locationService.requestLocationPermission();
+        if (!permissionGranted) {
+          _setError('Location permission denied');
+          return;
+        }
+      }
+      
+      // Get current position
+      final position = await _locationService.getCurrentPosition();
+      final latitude = position['latitude']!;
+      final longitude = position['longitude']!;
+      
+      await getWeatherByCoordinates(latitude, longitude);
+    } catch (e) {
+      _setError('Failed to get current location: $e');
     }
   }
 }

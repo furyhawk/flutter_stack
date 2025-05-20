@@ -6,9 +6,7 @@ import 'package:flutter_stack/core/theme/app_theme.dart';
 import 'package:flutter_stack/data/repositories/item_repository.dart';
 import 'package:flutter_stack/data/repositories/user_repository.dart';
 import 'package:flutter_stack/data/repositories/weather_repository.dart';
-import 'package:flutter_stack/domain/services/auth_service.dart';
-import 'package:flutter_stack/domain/services/item_service.dart';
-import 'package:flutter_stack/domain/services/weather_service.dart';
+import 'package:flutter_stack/domain/services/services.dart';
 import 'package:flutter_stack/domain/usecases/auth_usecases.dart';
 import 'package:flutter_stack/domain/usecases/item_usecases.dart';
 import 'package:flutter_stack/domain/usecases/weather_usecases.dart';
@@ -16,7 +14,7 @@ import 'package:flutter_stack/presentation/navigation/app_router.dart';
 import 'package:flutter_stack/presentation/screens/home/home_screen.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Initialize app configuration
@@ -24,6 +22,9 @@ void main() {
   
   // Initialize dependencies
   _initDependencies();
+  
+  // Initialize preferences
+  await ServiceLocator.instance.get<PreferencesService>().init();
   
   runApp(const MainApp());
 }
@@ -105,6 +106,7 @@ void _initDependencies() {
       getWeatherByCityUseCase: serviceLocator.get<GetWeatherByCityUseCase>(),
       getWeatherByCoordinatesUseCase: serviceLocator.get<GetWeatherByCoordinatesUseCase>(),
       getWeatherForecastUseCase: serviceLocator.get<GetWeatherForecastUseCase>(),
+      locationService: serviceLocator.get<LocationService>(),
     ),
   );
 
@@ -133,6 +135,12 @@ class MainApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<WeatherService>.value(
           value: ServiceLocator.instance.get<WeatherService>(),
+        ),
+        ChangeNotifierProvider<PreferencesService>.value(
+          value: ServiceLocator.instance.get<PreferencesService>(),
+        ),
+        Provider<LocationService>.value(
+          value: ServiceLocator.instance.get<LocationService>(),
         ),
       ],
       child: MaterialApp(

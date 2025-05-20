@@ -35,15 +35,19 @@ class ApiClientProvider {
 
     // Add logging interceptor in development
     if (AppConfig.instance.isDevelopment) {
-      dio.interceptors.add(
-        LogInterceptor(requestBody: true, responseBody: true),
-      );
+      dio.interceptors.add(LogInterceptor(
+        requestBody: true,
+        responseBody: true,
+      ));
     }
 
     // Add authentication interceptor if needed
     dio.interceptors.add(_createAuthInterceptor());
 
-    return ApiClient(dio: dio, basePathOverride: AppConfig.instance.apiBaseUrl);
+    return ApiClient(
+      dio: dio,
+      basePathOverride: AppConfig.instance.apiBaseUrl,
+    );
   }
 
   Interceptor _createAuthInterceptor() {
@@ -59,7 +63,7 @@ class ApiClientProvider {
   }
 
   // API service getters
-  ItemsApi get itemsApi => ItemsApi(apiClient.dio, apiClient.serializers);
+    ItemsApi get itemsApi => ItemsApi(apiClient.dio, apiClient.serializers);
   UsersApi get usersApi => UsersApi(apiClient.dio, apiClient.serializers);
   LoginApi get loginApi => LoginApi(apiClient.dio, apiClient.serializers);
   PrivateApi get privateApi => PrivateApi(apiClient.dio, apiClient.serializers);

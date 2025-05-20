@@ -8,7 +8,10 @@ class GetWeatherByCityUseCase {
   GetWeatherByCityUseCase(this._repository);
   
   Future<ApiResult<Weather>> execute(String city) async {
-    return _repository.getWeatherByCity(city);
+    // Use demo data for easier testing
+    return _repository.getDemoWeather(city);
+    // For real API usage, uncomment the following:
+    // return _repository.getWeatherByCity(city);
   }
 }
 
@@ -28,6 +31,9 @@ class GetWeatherForecastUseCase {
   GetWeatherForecastUseCase(this._repository);
   
   Future<ApiResult<List<Weather>>> execute(String city) async {
-    return _repository.getForecast(city);
+    // Use demo data for easier testing
+    return _repository.getDemoForecast(city);
+    // For real API usage, uncomment the following:
+    // return _repository.getForecast(city);
   }
 }

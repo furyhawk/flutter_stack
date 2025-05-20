@@ -20,6 +20,8 @@ dependencies:
   provider: ^6.1.1
   api_client:
     path: api/api_client
+  intl: ^0.20.2
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:
