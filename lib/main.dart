@@ -91,7 +91,16 @@ void _initDependencies() {
     () => GetCurrentUserUseCase(serviceLocator.get<UserRepository>()),
   );
   
-  // Register services
+  // Register basic services
+  serviceLocator.registerSingleton<PreferencesService>(
+    () => PreferencesService(),
+  );
+  
+  serviceLocator.registerSingleton<LocationService>(
+    () => LocationService(),
+  );
+  
+  // Register domain services
   serviceLocator.registerSingleton<AuthService>(
     () => AuthService(
       loginUseCase: serviceLocator.get<LoginUseCase>(),

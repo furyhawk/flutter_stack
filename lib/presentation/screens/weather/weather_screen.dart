@@ -121,12 +121,18 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   ),
                 ),
                 const SizedBox(width: 8.0),
-                ElevatedButton(
-                  onPressed: _searchCity,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 15.0),
+                SizedBox(
+                  height: 56.0, // Match TextField height
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints.tightFor(width: 100.0),
+                    child: ElevatedButton(
+                      onPressed: _searchCity,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      ),
+                      child: const Text('Search'),
+                    ),
                   ),
-                  child: const Text('Search'),
                 ),
               ],
             ),
