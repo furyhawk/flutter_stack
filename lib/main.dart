@@ -66,16 +66,8 @@ void _initDependencies() {
   );
   
   // Register Weather use cases
-  serviceLocator.registerSingleton<GetWeatherByCityUseCase>(
-    () => GetWeatherByCityUseCase(serviceLocator.get<WeatherRepository>()),
-  );
-  
-  serviceLocator.registerSingleton<GetWeatherByCoordinatesUseCase>(
-    () => GetWeatherByCoordinatesUseCase(serviceLocator.get<WeatherRepository>()),
-  );
-  
-  serviceLocator.registerSingleton<GetWeatherForecastUseCase>(
-    () => GetWeatherForecastUseCase(serviceLocator.get<WeatherRepository>()),
+  serviceLocator.registerSingleton<GetSgTwoHourForecastUseCase>(
+    () => GetSgTwoHourForecastUseCase(serviceLocator.get<WeatherRepository>()),
   );
   
   // Register login use cases
@@ -112,9 +104,7 @@ void _initDependencies() {
 
   serviceLocator.registerSingleton<WeatherService>(
     () => WeatherService(
-      getWeatherByCityUseCase: serviceLocator.get<GetWeatherByCityUseCase>(),
-      getWeatherByCoordinatesUseCase: serviceLocator.get<GetWeatherByCoordinatesUseCase>(),
-      getWeatherForecastUseCase: serviceLocator.get<GetWeatherForecastUseCase>(),
+      getSgTwoHourForecastUseCase: serviceLocator.get<GetSgTwoHourForecastUseCase>(),
       locationService: serviceLocator.get<LocationService>(),
     ),
   );

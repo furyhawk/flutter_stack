@@ -19,7 +19,6 @@ class WeatherIcons {
       case WeatherCondition.foggy:
         return Icons.cloud_queue;
       case WeatherCondition.unknown:
-      default:
         return Icons.help_outline;
     }
   }
@@ -40,7 +39,6 @@ class WeatherIcons {
       case WeatherCondition.foggy:
         return Colors.grey;
       case WeatherCondition.unknown:
-      default:
         return Colors.grey;
     }
   }
@@ -57,5 +55,50 @@ class WeatherIcons {
       size: size,
       color: color ?? getColorForCondition(condition),
     );
+  }
+}
+
+// Convert Weather code to icon
+IconData getWeatherIcon(int code) {
+  switch (code) {
+    case >= 200 && < 300: // Thunderstorm
+      return Icons.flash_on; // Example Icon
+    case >= 300 && < 400: // Drizzle
+      return Icons.grain; // Example Icon
+    case >= 500 && < 600: // Rain
+      return Icons.beach_access; // Example Icon
+    case >= 600 && < 700: // Snow
+      return Icons.ac_unit; // Example Icon
+    case >= 700 && < 800: // Atmosphere
+      return Icons.foggy; // Example Icon
+    case == 800: // Clear
+      return Icons.wb_sunny; // Example Icon
+    case > 800 && < 805: // Clouds
+      return Icons.wb_cloudy; // Example Icon
+    default: // Default icon if no match
+      return Icons.help_outline; // Or some other default
+  }
+}
+
+// Convert Weather code to background image
+String getWeatherBackgroundImage(int code, {bool isDay = true}) {
+  String basePath = 'assets/images/backgrounds';
+  switch (code) {
+    case >= 200 && < 300: // Thunderstorm
+      return '$basePath/thunderstorm.jpg';
+    case >= 300 && < 400: // Drizzle
+      return '$basePath/drizzle.jpg';
+    case >= 500 && < 600: // Rain
+      return '$basePath/rain.jpg';
+    case >= 600 && < 700: // Snow
+      return '$basePath/snow.jpg';
+    case >= 700 && < 800: // Atmosphere (fog, mist, etc.)
+      return '$basePath/atmosphere.jpg';
+    case == 800: // Clear
+      return isDay ? '$basePath/clear_day.jpg' : '$basePath/clear_night.jpg';
+    case > 800 && < 805: // Clouds
+      return isDay ? '$basePath/cloudy_day.jpg' : '$basePath/cloudy_night.jpg';
+    default: // Default background
+      return isDay ? '$basePath/clear_day.jpg' : '$basePath/clear_night.jpg';
   }
 }
