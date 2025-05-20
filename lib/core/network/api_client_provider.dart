@@ -68,4 +68,5 @@ class ApiClientProvider {
   LoginApi get loginApi => LoginApi(apiClient.dio, apiClient.serializers);
   PrivateApi get privateApi => PrivateApi(apiClient.dio, apiClient.serializers);
   UtilsApi get utilsApi => UtilsApi(apiClient.dio, apiClient.serializers);
+  WeatherApi get weatherApi => WeatherApi(apiClient.dio, apiClient.serializers);
 }
