@@ -85,6 +85,18 @@ Or run the provided command in the terminal (displayed after running the generat
 - Dart SDK
 - Node.js and npm (for OpenAPI Generator)
 
+It looks like you're missing a system dependency, `libsecret-1`, which is required by the `flutter_secure_storage_linux` plugin.
+
+You can install it by running one of the following commands in your terminal, depending on your Linux distribution:
+
+For Debian/Ubuntu-based distributions:
+ The CMake error indicates that the `libsecret-1` package, version 0.18.4 or higher, is missing. This is a dependency for the `flutter_secure_storage_linux` plugin.
+
+I've run a command to install `libsecret-1-dev`, which should resolve the issue. Please try running your Flutter application again.
+```
+sudo apt-get update && sudo apt-get install -y libsecret-1-dev
+```
+
 ### Setup
 
 1. Clone the repository

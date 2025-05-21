@@ -1,8 +1,8 @@
 /// Configuration class for the app
 class AppConfig {
   // Base URL for the API
-  static const String apiBaseUrl = 'http://localhost:8000';
-  // static const String apiBaseUrl = 'https://service.furyhawk.lol';
+  // static const String apiBaseUrl = 'http://localhost:8000';
+  static const String apiBaseUrl = 'https://service.furyhawk.lol';
   
   // API endpoints
   static const String loginEndpoint = '/login';
