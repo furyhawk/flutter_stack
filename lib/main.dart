@@ -1,116 +1,40 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_stack/core/config/app_config.dart';
-import 'package:flutter_stack/core/di/service_locator.dart';
-import 'package:flutter_stack/core/network/api_client_provider.dart';
-import 'package:flutter_stack/core/theme/app_theme.dart';
-import 'package:flutter_stack/data/repositories/item_repository.dart';
-import 'package:flutter_stack/data/repositories/user_repository.dart';
-import 'package:flutter_stack/domain/services/auth_service.dart';
-import 'package:flutter_stack/domain/services/item_service.dart';
-import 'package:flutter_stack/domain/usecases/auth_usecases.dart';
-import 'package:flutter_stack/domain/usecases/item_usecases.dart';
-import 'package:flutter_stack/presentation/navigation/app_router.dart';
-import 'package:flutter_stack/presentation/screens/home/home_screen.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_stack/app.dart';
+import 'package:flutter_stack/core/utils/service_locator.dart';
+import 'package:flutter_stack/features/auth/domain/auth_provider.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  // This ensures that plugin services are initialized before calling any platform channels
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize app configuration
-  AppConfig.initialize(environment: Environment.staging);
+  // Set preferred orientations
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   
-  // Initialize dependencies
-  _initDependencies();
-  
-  runApp(const MainApp());
-}
-
-void _initDependencies() {
-  final serviceLocator = ServiceLocator.instance;
-  
-  // Register API client provider
-  serviceLocator.registerSingleton<ApiClientProvider>(() => ApiClientProvider());
-  
-  // Register repositories
-  serviceLocator.registerSingleton<ItemRepository>(
-    () => ItemRepository(serviceLocator.get<ApiClientProvider>()),
-  );
-  
-  serviceLocator.registerSingleton<UserRepository>(
-    () => UserRepository(serviceLocator.get<ApiClientProvider>()),
-  );
-  
-  // Register use cases
-  serviceLocator.registerSingleton<GetItemsUseCase>(
-    () => GetItemsUseCase(serviceLocator.get<ItemRepository>()),
-  );
-  
-  serviceLocator.registerSingleton<CreateItemUseCase>(
-    () => CreateItemUseCase(serviceLocator.get<ItemRepository>()),
-  );
-  
-  serviceLocator.registerSingleton<UpdateItemUseCase>(
-    () => UpdateItemUseCase(serviceLocator.get<ItemRepository>()),
-  );
-  
-  serviceLocator.registerSingleton<DeleteItemUseCase>(
-    () => DeleteItemUseCase(serviceLocator.get<ItemRepository>()),
-  );
-  
-  serviceLocator.registerSingleton<LoginUseCase>(
-    () => LoginUseCase(serviceLocator.get<UserRepository>()),
-  );
-  
-  serviceLocator.registerSingleton<RegisterUseCase>(
-    () => RegisterUseCase(serviceLocator.get<UserRepository>()),
-  );
-  
-  serviceLocator.registerSingleton<GetCurrentUserUseCase>(
-    () => GetCurrentUserUseCase(serviceLocator.get<UserRepository>()),
-  );
-  
-  // Register services
-  serviceLocator.registerSingleton<AuthService>(
-    () => AuthService(
-      loginUseCase: serviceLocator.get<LoginUseCase>(),
-      registerUseCase: serviceLocator.get<RegisterUseCase>(),
-      getCurrentUserUseCase: serviceLocator.get<GetCurrentUserUseCase>(),
-      apiClientProvider: serviceLocator.get<ApiClientProvider>(),
+  // Set system UI overlay style
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+      statusBarBrightness: Brightness.light,
     ),
   );
-
-  serviceLocator.registerSingleton<ItemService>(
-    () => ItemService(
-      createItemUseCase: serviceLocator.get<CreateItemUseCase>(),
-      getItemsUseCase: serviceLocator.get<GetItemsUseCase>(),
-      updateItemUseCase: serviceLocator.get<UpdateItemUseCase>(),
-      deleteItemUseCase: serviceLocator.get<DeleteItemUseCase>(),
-    ),
-  );
-}
-
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
+  
+  // Initialize the service locator
+  ServiceLocator.init();
+  
+  runApp(
+    MultiProvider(
       providers: [
-        ChangeNotifierProvider<AuthService>.value(
-          value: ServiceLocator.instance.get<AuthService>(),
-        ),
-        Provider<ItemService>.value(
-          value: ServiceLocator.instance.get<ItemService>(),
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(ServiceLocator.authRepository),
         ),
       ],
-      child: MaterialApp(
-        title: 'Flutter Stack',
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system,
-        onGenerateRoute: AppRouter.generateRoute,
-        home: const AuthGuard(child: HomeScreen()),
-      ),
-    );
-  }
+      child: const App(),
+    ),
+  );
 }

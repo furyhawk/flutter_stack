@@ -20,6 +20,9 @@ dependencies:
   provider: ^6.1.1
   api_client:
     path: api/api_client
+  flutter_secure_storage: ^9.0.0
+  shared_preferences: ^2.5.3
+  provider: ^6.1.5
 
 dev_dependencies:
   flutter_test:

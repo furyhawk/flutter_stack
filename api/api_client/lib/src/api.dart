@@ -14,6 +14,7 @@ import 'package:api_client/src/api/login_api.dart';
 import 'package:api_client/src/api/private_api.dart';
 import 'package:api_client/src/api/users_api.dart';
 import 'package:api_client/src/api/utils_api.dart';
+import 'package:api_client/src/api/weather_api.dart';
 
 class ApiClient {
   static const String basePath = r'https://service.furyhawk.lol';
@@ -97,5 +98,11 @@ class ApiClient {
   /// by doing that all interceptors will not be executed
   UtilsApi getUtilsApi() {
     return UtilsApi(dio, serializers);
+  }
+
+  /// Get WeatherApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  WeatherApi getWeatherApi() {
+    return WeatherApi(dio, serializers);
   }
 }
