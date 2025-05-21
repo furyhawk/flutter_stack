@@ -15,6 +15,7 @@ class AuthRepository {
       final response = await _apiService.loginApi.loginLoginAccessToken(
         username: username,
         password: password,
+        grantType: 'password',
       );
       final token = response.data!;
       
