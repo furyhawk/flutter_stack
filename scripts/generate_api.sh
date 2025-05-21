@@ -4,11 +4,13 @@
 
 # API directory name variable
 API_DIR="api_client"
+# OpenAPI specification URL
+OPENAPI_SPEC_URL="https://service.furyhawk.lol/api/v1/openapi.json" 
 
 # Ensure the api_client dependency is commented out in pubspec.yaml before generation
-echo "Ensuring api_client dependency is disabled..."
-sed -i.bak -E 's/^([[:space:]]+)api_client:/\1# api_client:/' pubspec.yaml
-sed -i.bak -E 's/^([[:space:]]+)path: api\/api_client/\1# path: api\/api_client/' pubspec.yaml
+echo "Ensuring $API_DIR dependency is disabled..."
+sed -i.bak -E "s/^([[:space:]]+)$API_DIR:/\\1# $API_DIR:/" pubspec.yaml
+sed -i.bak -E "s/^([[:space:]]+)path: api\\/$API_DIR/\\1# path: api\\/$API_DIR/" pubspec.yaml
 rm -f pubspec.yaml.bak
 
 echo "Generating API client code from OpenAPI spec..."
@@ -32,10 +34,10 @@ fi
 
 # Use the npm-installed openapi-generator-cli
 echo "Running OpenAPI Generator..."
-npx @openapitools/openapi-generator-cli generate \
-  -i https://service.furyhawk.lol/api/v1/openapi.json \
-  -g dart-dio \
-  -o api/$API_DIR \
+npx @openapitools/openapi-generator-cli generate \\
+  -i "$OPENAPI_SPEC_URL" \\
+  -g dart-dio \\
+  -o api/$API_DIR \\
   --additional-properties=pubName=$API_DIR,pubAuthor=OpenAPI_Generator
 
 # Run build_runner for any additional code generation in the generated API directory
@@ -48,8 +50,8 @@ cd ../..
 echo "API client code generation completed!"
 echo ""
 echo "To use the generated API client, uncomment the following lines in pubspec.yaml:"
-echo "  api_client:"
-echo "    path: api/api_client"
+echo "  $API_DIR:"
+echo "    path: api/$API_DIR"
 echo ""
 echo "Or run this command to automatically enable it:"
-echo "  sed -i.bak -E 's/^([[:space:]]+)# api_client:/\1api_client:/' pubspec.yaml && sed -i.bak -E 's/^([[:space:]]+)# path: api\/api_client/\1path: api\/api_client/' pubspec.yaml && rm -f pubspec.yaml.bak"
+echo "  sed -i.bak -E 's/^([[:space:]]+)# $API_DIR:/\\1$API_DIR:/' pubspec.yaml && sed -i.bak -E 's/^([[:space:]]+)# path: api\\/$API_DIR/\\1path: api\\/$API_DIR/' pubspec.yaml && rm -f pubspec.yaml.bak"
