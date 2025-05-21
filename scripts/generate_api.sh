@@ -34,11 +34,7 @@ fi
 
 # Use the npm-installed openapi-generator-cli
 echo "Running OpenAPI Generator..."
-npx @openapitools/openapi-generator-cli generate \\
-  -i "$OPENAPI_SPEC_URL" \\
-  -g dart-dio \\
-  -o api/$API_DIR \\
-  --additional-properties=pubName=$API_DIR,pubAuthor=OpenAPI_Generator
+npx @openapitools/openapi-generator-cli generate -i "$OPENAPI_SPEC_URL" -g dart-dio -o api/$API_DIR --additional-properties=pubName=$API_DIR,pubAuthor=OpenAPI_Generator
 
 # Run build_runner for any additional code generation in the generated API directory
 echo "Running build_runner for additional code generation..."
@@ -55,3 +51,8 @@ echo "    path: api/$API_DIR"
 echo ""
 echo "Or run this command to automatically enable it:"
 echo "  sed -i.bak -E 's/^([[:space:]]+)# $API_DIR:/\\1$API_DIR:/' pubspec.yaml && sed -i.bak -E 's/^([[:space:]]+)# path: api\\/$API_DIR/\\1path: api\\/$API_DIR/' pubspec.yaml && rm -f pubspec.yaml.bak"
+
+sed -i.bak -E "s/^([[:space:]]+)# $API_DIR:/\\1$API_DIR:/" pubspec.yaml
+sed -i.bak -E "s/^([[:space:]]+)# path: api\\/$API_DIR/\\1path: api\\/$API_DIR/" pubspec.yaml
+rm -f pubspec.yaml.bak
+echo "API client code generation script completed!"
