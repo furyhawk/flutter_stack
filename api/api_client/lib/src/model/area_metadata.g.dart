@@ -13,21 +13,16 @@ class _$AreaMetadata extends AreaMetadata {
   final LabelLocation labelLocation;
 
   factory _$AreaMetadata([void Function(AreaMetadataBuilder)? updates]) =>
-      (new AreaMetadataBuilder()..update(updates))._build();
+      (AreaMetadataBuilder()..update(updates))._build();
 
   _$AreaMetadata._({required this.name, required this.labelLocation})
-      : super._() {
-    BuiltValueNullFieldError.checkNotNull(name, r'AreaMetadata', 'name');
-    BuiltValueNullFieldError.checkNotNull(
-        labelLocation, r'AreaMetadata', 'labelLocation');
-  }
-
+      : super._();
   @override
   AreaMetadata rebuild(void Function(AreaMetadataBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  AreaMetadataBuilder toBuilder() => new AreaMetadataBuilder()..replace(this);
+  AreaMetadataBuilder toBuilder() => AreaMetadataBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -65,7 +60,7 @@ class AreaMetadataBuilder
 
   LabelLocationBuilder? _labelLocation;
   LabelLocationBuilder get labelLocation =>
-      _$this._labelLocation ??= new LabelLocationBuilder();
+      _$this._labelLocation ??= LabelLocationBuilder();
   set labelLocation(LabelLocationBuilder? labelLocation) =>
       _$this._labelLocation = labelLocation;
 
@@ -85,7 +80,6 @@ class AreaMetadataBuilder
 
   @override
   void replace(AreaMetadata other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$AreaMetadata;
   }
 
@@ -101,7 +95,7 @@ class AreaMetadataBuilder
     _$AreaMetadata _$result;
     try {
       _$result = _$v ??
-          new _$AreaMetadata._(
+          _$AreaMetadata._(
             name: BuiltValueNullFieldError.checkNotNull(
                 name, r'AreaMetadata', 'name'),
             labelLocation: labelLocation.build(),
@@ -112,7 +106,7 @@ class AreaMetadataBuilder
         _$failedField = 'labelLocation';
         labelLocation.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'AreaMetadata', _$failedField, e.toString());
       }
       rethrow;

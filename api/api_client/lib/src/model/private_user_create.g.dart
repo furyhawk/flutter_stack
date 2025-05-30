@@ -18,28 +18,21 @@ class _$PrivateUserCreate extends PrivateUserCreate {
 
   factory _$PrivateUserCreate(
           [void Function(PrivateUserCreateBuilder)? updates]) =>
-      (new PrivateUserCreateBuilder()..update(updates))._build();
+      (PrivateUserCreateBuilder()..update(updates))._build();
 
   _$PrivateUserCreate._(
       {required this.email,
       required this.password,
       required this.fullName,
       this.isVerified})
-      : super._() {
-    BuiltValueNullFieldError.checkNotNull(email, r'PrivateUserCreate', 'email');
-    BuiltValueNullFieldError.checkNotNull(
-        password, r'PrivateUserCreate', 'password');
-    BuiltValueNullFieldError.checkNotNull(
-        fullName, r'PrivateUserCreate', 'fullName');
-  }
-
+      : super._();
   @override
   PrivateUserCreate rebuild(void Function(PrivateUserCreateBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
   PrivateUserCreateBuilder toBuilder() =>
-      new PrivateUserCreateBuilder()..replace(this);
+      PrivateUserCreateBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -111,7 +104,6 @@ class PrivateUserCreateBuilder
 
   @override
   void replace(PrivateUserCreate other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$PrivateUserCreate;
   }
 
@@ -125,7 +117,7 @@ class PrivateUserCreateBuilder
 
   _$PrivateUserCreate _build() {
     final _$result = _$v ??
-        new _$PrivateUserCreate._(
+        _$PrivateUserCreate._(
           email: BuiltValueNullFieldError.checkNotNull(
               email, r'PrivateUserCreate', 'email'),
           password: BuiltValueNullFieldError.checkNotNull(

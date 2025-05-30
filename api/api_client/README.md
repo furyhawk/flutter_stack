@@ -88,24 +88,47 @@ Class | Method | HTTP request | Description
 [*UsersApi*](doc/UsersApi.md) | [**usersUpdateUserMe**](doc/UsersApi.md#usersupdateuserme) | **PATCH** /api/v1/users/me | Update User Me
 [*UtilsApi*](doc/UtilsApi.md) | [**utilsHealthCheck**](doc/UtilsApi.md#utilshealthcheck) | **GET** /api/v1/utils/health-check/ | Health Check
 [*UtilsApi*](doc/UtilsApi.md) | [**utilsTestEmail**](doc/UtilsApi.md#utilstestemail) | **POST** /api/v1/utils/test-email/ | Test Email
+[*WeatherApi*](doc/WeatherApi.md) | [**weatherGetAirTemperature**](doc/WeatherApi.md#weathergetairtemperature) | **GET** /api/v1/weather/air-temperature | Get Air Temperature
+[*WeatherApi*](doc/WeatherApi.md) | [**weatherGetFourDayOutlook**](doc/WeatherApi.md#weathergetfourdayoutlook) | **GET** /api/v1/weather/four-day-outlook | Get Four Day Outlook
+[*WeatherApi*](doc/WeatherApi.md) | [**weatherGetLightning**](doc/WeatherApi.md#weathergetlightning) | **GET** /api/v1/weather/lightning | Get Lightning
+[*WeatherApi*](doc/WeatherApi.md) | [**weatherGetTwentyFourHourForecast**](doc/WeatherApi.md#weathergettwentyfourhourforecast) | **GET** /api/v1/weather/twenty-four-hour-forecast | Get Twenty Four Hour Forecast
 [*WeatherApi*](doc/WeatherApi.md) | [**weatherGetTwoHourForecast**](doc/WeatherApi.md#weathergettwohourforecast) | **GET** /api/v1/weather/two-hour-forecast | Get Two Hour Forecast
+[*WeatherApi*](doc/WeatherApi.md) | [**weatherGetWbgt**](doc/WeatherApi.md#weathergetwbgt) | **GET** /api/v1/weather/wbgt | Get Wbgt
+[*WeatherApi*](doc/WeatherApi.md) | [**weatherGetWindDirection**](doc/WeatherApi.md#weathergetwinddirection) | **GET** /api/v1/weather/wind-direction | Get Wind Direction
 
 
 ## Documentation For Models
 
+ - [AirTemperatureData](doc/AirTemperatureData.md)
+ - [AirTemperatureResponse](doc/AirTemperatureResponse.md)
  - [AreaMetadata](doc/AreaMetadata.md)
- - [Forecast](doc/Forecast.md)
- - [ForecastPeriod](doc/ForecastPeriod.md)
+ - [ForecastInfo](doc/ForecastInfo.md)
+ - [ForecastItem](doc/ForecastItem.md)
+ - [ForecastPeriodGeneral](doc/ForecastPeriodGeneral.md)
+ - [FourDayForecastData](doc/FourDayForecastData.md)
+ - [FourDayForecastItem](doc/FourDayForecastItem.md)
+ - [FourDayForecastResponse](doc/FourDayForecastResponse.md)
+ - [GeneralForecast](doc/GeneralForecast.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
+ - [HumidityRange](doc/HumidityRange.md)
  - [ItemCreate](doc/ItemCreate.md)
  - [ItemPublic](doc/ItemPublic.md)
  - [ItemUpdate](doc/ItemUpdate.md)
  - [ItemsPublic](doc/ItemsPublic.md)
  - [LabelLocation](doc/LabelLocation.md)
+ - [LightningData](doc/LightningData.md)
+ - [LightningRecord](doc/LightningRecord.md)
+ - [LightningResponse](doc/LightningResponse.md)
  - [Message](doc/Message.md)
  - [NewPassword](doc/NewPassword.md)
  - [PrivateUserCreate](doc/PrivateUserCreate.md)
+ - [Reading](doc/Reading.md)
+ - [ReadingDataPoint](doc/ReadingDataPoint.md)
+ - [Station](doc/Station.md)
+ - [TemperatureRange](doc/TemperatureRange.md)
  - [Token](doc/Token.md)
+ - [TwentyFourHourForecastData](doc/TwentyFourHourForecastData.md)
+ - [TwentyFourHourForecastResponse](doc/TwentyFourHourForecastResponse.md)
  - [UpdatePassword](doc/UpdatePassword.md)
  - [UserCreate](doc/UserCreate.md)
  - [UserPublic](doc/UserPublic.md)
@@ -115,9 +138,13 @@ Class | Method | HTTP request | Description
  - [UsersPublic](doc/UsersPublic.md)
  - [ValidationError](doc/ValidationError.md)
  - [ValidationErrorLocInner](doc/ValidationErrorLocInner.md)
- - [WeatherData](doc/WeatherData.md)
- - [WeatherItem](doc/WeatherItem.md)
+ - [WBGTData](doc/WBGTData.md)
+ - [WBGTRecord](doc/WBGTRecord.md)
+ - [WBGTResponse](doc/WBGTResponse.md)
  - [WeatherResponse](doc/WeatherResponse.md)
+ - [WindDirectionData](doc/WindDirectionData.md)
+ - [WindDirectionResponse](doc/WindDirectionResponse.md)
+ - [WindInfo](doc/WindInfo.md)
 
 
 ## Documentation For Authorization

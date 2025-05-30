@@ -17,25 +17,20 @@ class _$ItemPublic extends ItemPublic {
   final String ownerId;
 
   factory _$ItemPublic([void Function(ItemPublicBuilder)? updates]) =>
-      (new ItemPublicBuilder()..update(updates))._build();
+      (ItemPublicBuilder()..update(updates))._build();
 
   _$ItemPublic._(
       {required this.title,
       this.description,
       required this.id,
       required this.ownerId})
-      : super._() {
-    BuiltValueNullFieldError.checkNotNull(title, r'ItemPublic', 'title');
-    BuiltValueNullFieldError.checkNotNull(id, r'ItemPublic', 'id');
-    BuiltValueNullFieldError.checkNotNull(ownerId, r'ItemPublic', 'ownerId');
-  }
-
+      : super._();
   @override
   ItemPublic rebuild(void Function(ItemPublicBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  ItemPublicBuilder toBuilder() => new ItemPublicBuilder()..replace(this);
+  ItemPublicBuilder toBuilder() => ItemPublicBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -106,7 +101,6 @@ class ItemPublicBuilder implements Builder<ItemPublic, ItemPublicBuilder> {
 
   @override
   void replace(ItemPublic other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$ItemPublic;
   }
 
@@ -120,7 +114,7 @@ class ItemPublicBuilder implements Builder<ItemPublic, ItemPublicBuilder> {
 
   _$ItemPublic _build() {
     final _$result = _$v ??
-        new _$ItemPublic._(
+        _$ItemPublic._(
           title: BuiltValueNullFieldError.checkNotNull(
               title, r'ItemPublic', 'title'),
           description: description,

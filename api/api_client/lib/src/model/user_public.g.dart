@@ -19,7 +19,7 @@ class _$UserPublic extends UserPublic {
   final String id;
 
   factory _$UserPublic([void Function(UserPublicBuilder)? updates]) =>
-      (new UserPublicBuilder()..update(updates))._build();
+      (UserPublicBuilder()..update(updates))._build();
 
   _$UserPublic._(
       {required this.email,
@@ -27,17 +27,13 @@ class _$UserPublic extends UserPublic {
       this.isSuperuser,
       this.fullName,
       required this.id})
-      : super._() {
-    BuiltValueNullFieldError.checkNotNull(email, r'UserPublic', 'email');
-    BuiltValueNullFieldError.checkNotNull(id, r'UserPublic', 'id');
-  }
-
+      : super._();
   @override
   UserPublic rebuild(void Function(UserPublicBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  UserPublicBuilder toBuilder() => new UserPublicBuilder()..replace(this);
+  UserPublicBuilder toBuilder() => UserPublicBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -116,7 +112,6 @@ class UserPublicBuilder implements Builder<UserPublic, UserPublicBuilder> {
 
   @override
   void replace(UserPublic other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$UserPublic;
   }
 
@@ -130,7 +125,7 @@ class UserPublicBuilder implements Builder<UserPublic, UserPublicBuilder> {
 
   _$UserPublic _build() {
     final _$result = _$v ??
-        new _$UserPublic._(
+        _$UserPublic._(
           email: BuiltValueNullFieldError.checkNotNull(
               email, r'UserPublic', 'email'),
           isActive: isActive,

@@ -13,21 +13,15 @@ class _$NewPassword extends NewPassword {
   final String newPassword;
 
   factory _$NewPassword([void Function(NewPasswordBuilder)? updates]) =>
-      (new NewPasswordBuilder()..update(updates))._build();
+      (NewPasswordBuilder()..update(updates))._build();
 
-  _$NewPassword._({required this.token, required this.newPassword})
-      : super._() {
-    BuiltValueNullFieldError.checkNotNull(token, r'NewPassword', 'token');
-    BuiltValueNullFieldError.checkNotNull(
-        newPassword, r'NewPassword', 'newPassword');
-  }
-
+  _$NewPassword._({required this.token, required this.newPassword}) : super._();
   @override
   NewPassword rebuild(void Function(NewPasswordBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  NewPasswordBuilder toBuilder() => new NewPasswordBuilder()..replace(this);
+  NewPasswordBuilder toBuilder() => NewPasswordBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -82,7 +76,6 @@ class NewPasswordBuilder implements Builder<NewPassword, NewPasswordBuilder> {
 
   @override
   void replace(NewPassword other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$NewPassword;
   }
 
@@ -96,7 +89,7 @@ class NewPasswordBuilder implements Builder<NewPassword, NewPasswordBuilder> {
 
   _$NewPassword _build() {
     final _$result = _$v ??
-        new _$NewPassword._(
+        _$NewPassword._(
           token: BuiltValueNullFieldError.checkNotNull(
               token, r'NewPassword', 'token'),
           newPassword: BuiltValueNullFieldError.checkNotNull(

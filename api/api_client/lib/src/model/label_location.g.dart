@@ -13,22 +13,16 @@ class _$LabelLocation extends LabelLocation {
   final num longitude;
 
   factory _$LabelLocation([void Function(LabelLocationBuilder)? updates]) =>
-      (new LabelLocationBuilder()..update(updates))._build();
+      (LabelLocationBuilder()..update(updates))._build();
 
   _$LabelLocation._({required this.latitude, required this.longitude})
-      : super._() {
-    BuiltValueNullFieldError.checkNotNull(
-        latitude, r'LabelLocation', 'latitude');
-    BuiltValueNullFieldError.checkNotNull(
-        longitude, r'LabelLocation', 'longitude');
-  }
-
+      : super._();
   @override
   LabelLocation rebuild(void Function(LabelLocationBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  LabelLocationBuilder toBuilder() => new LabelLocationBuilder()..replace(this);
+  LabelLocationBuilder toBuilder() => LabelLocationBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -84,7 +78,6 @@ class LabelLocationBuilder
 
   @override
   void replace(LabelLocation other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$LabelLocation;
   }
 
@@ -98,7 +91,7 @@ class LabelLocationBuilder
 
   _$LabelLocation _build() {
     final _$result = _$v ??
-        new _$LabelLocation._(
+        _$LabelLocation._(
           latitude: BuiltValueNullFieldError.checkNotNull(
               latitude, r'LabelLocation', 'latitude'),
           longitude: BuiltValueNullFieldError.checkNotNull(

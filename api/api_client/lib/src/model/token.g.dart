@@ -13,18 +13,15 @@ class _$Token extends Token {
   final String? tokenType;
 
   factory _$Token([void Function(TokenBuilder)? updates]) =>
-      (new TokenBuilder()..update(updates))._build();
+      (TokenBuilder()..update(updates))._build();
 
-  _$Token._({required this.accessToken, this.tokenType}) : super._() {
-    BuiltValueNullFieldError.checkNotNull(accessToken, r'Token', 'accessToken');
-  }
-
+  _$Token._({required this.accessToken, this.tokenType}) : super._();
   @override
   Token rebuild(void Function(TokenBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  TokenBuilder toBuilder() => new TokenBuilder()..replace(this);
+  TokenBuilder toBuilder() => TokenBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -79,7 +76,6 @@ class TokenBuilder implements Builder<Token, TokenBuilder> {
 
   @override
   void replace(Token other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$Token;
   }
 
@@ -93,7 +89,7 @@ class TokenBuilder implements Builder<Token, TokenBuilder> {
 
   _$Token _build() {
     final _$result = _$v ??
-        new _$Token._(
+        _$Token._(
           accessToken: BuiltValueNullFieldError.checkNotNull(
               accessToken, r'Token', 'accessToken'),
           tokenType: tokenType,

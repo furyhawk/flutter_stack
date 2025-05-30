@@ -13,18 +13,15 @@ class _$ItemCreate extends ItemCreate {
   final String? description;
 
   factory _$ItemCreate([void Function(ItemCreateBuilder)? updates]) =>
-      (new ItemCreateBuilder()..update(updates))._build();
+      (ItemCreateBuilder()..update(updates))._build();
 
-  _$ItemCreate._({required this.title, this.description}) : super._() {
-    BuiltValueNullFieldError.checkNotNull(title, r'ItemCreate', 'title');
-  }
-
+  _$ItemCreate._({required this.title, this.description}) : super._();
   @override
   ItemCreate rebuild(void Function(ItemCreateBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  ItemCreateBuilder toBuilder() => new ItemCreateBuilder()..replace(this);
+  ItemCreateBuilder toBuilder() => ItemCreateBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -79,7 +76,6 @@ class ItemCreateBuilder implements Builder<ItemCreate, ItemCreateBuilder> {
 
   @override
   void replace(ItemCreate other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$ItemCreate;
   }
 
@@ -93,7 +89,7 @@ class ItemCreateBuilder implements Builder<ItemCreate, ItemCreateBuilder> {
 
   _$ItemCreate _build() {
     final _$result = _$v ??
-        new _$ItemCreate._(
+        _$ItemCreate._(
           title: BuiltValueNullFieldError.checkNotNull(
               title, r'ItemCreate', 'title'),
           description: description,

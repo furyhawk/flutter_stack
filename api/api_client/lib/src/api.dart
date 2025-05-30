@@ -17,7 +17,7 @@ import 'package:api_client/src/api/utils_api.dart';
 import 'package:api_client/src/api/weather_api.dart';
 
 class ApiClient {
-  static const String basePath = r'https://service.furyhawk.lol';
+  static const String basePath = r'http://localhost';
 
   final Dio dio;
   final Serializers serializers;

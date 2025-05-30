@@ -13,16 +13,15 @@ class _$ItemUpdate extends ItemUpdate {
   final String? description;
 
   factory _$ItemUpdate([void Function(ItemUpdateBuilder)? updates]) =>
-      (new ItemUpdateBuilder()..update(updates))._build();
+      (ItemUpdateBuilder()..update(updates))._build();
 
   _$ItemUpdate._({this.title, this.description}) : super._();
-
   @override
   ItemUpdate rebuild(void Function(ItemUpdateBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  ItemUpdateBuilder toBuilder() => new ItemUpdateBuilder()..replace(this);
+  ItemUpdateBuilder toBuilder() => ItemUpdateBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -77,7 +76,6 @@ class ItemUpdateBuilder implements Builder<ItemUpdate, ItemUpdateBuilder> {
 
   @override
   void replace(ItemUpdate other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$ItemUpdate;
   }
 
@@ -91,7 +89,7 @@ class ItemUpdateBuilder implements Builder<ItemUpdate, ItemUpdateBuilder> {
 
   _$ItemUpdate _build() {
     final _$result = _$v ??
-        new _$ItemUpdate._(
+        _$ItemUpdate._(
           title: title,
           description: description,
         );

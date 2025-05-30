@@ -19,7 +19,7 @@ class _$UserCreate extends UserCreate {
   final String password;
 
   factory _$UserCreate([void Function(UserCreateBuilder)? updates]) =>
-      (new UserCreateBuilder()..update(updates))._build();
+      (UserCreateBuilder()..update(updates))._build();
 
   _$UserCreate._(
       {required this.email,
@@ -27,17 +27,13 @@ class _$UserCreate extends UserCreate {
       this.isSuperuser,
       this.fullName,
       required this.password})
-      : super._() {
-    BuiltValueNullFieldError.checkNotNull(email, r'UserCreate', 'email');
-    BuiltValueNullFieldError.checkNotNull(password, r'UserCreate', 'password');
-  }
-
+      : super._();
   @override
   UserCreate rebuild(void Function(UserCreateBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  UserCreateBuilder toBuilder() => new UserCreateBuilder()..replace(this);
+  UserCreateBuilder toBuilder() => UserCreateBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -116,7 +112,6 @@ class UserCreateBuilder implements Builder<UserCreate, UserCreateBuilder> {
 
   @override
   void replace(UserCreate other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$UserCreate;
   }
 
@@ -130,7 +125,7 @@ class UserCreateBuilder implements Builder<UserCreate, UserCreateBuilder> {
 
   _$UserCreate _build() {
     final _$result = _$v ??
-        new _$UserCreate._(
+        _$UserCreate._(
           email: BuiltValueNullFieldError.checkNotNull(
               email, r'UserCreate', 'email'),
           isActive: isActive,

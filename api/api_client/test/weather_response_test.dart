@@ -17,7 +17,7 @@ void main() {
       // TODO
     });
 
-    // WeatherData data
+    // BuiltMap<String, JsonObject> data
     test('to test the property `data`', () async {
       // TODO
     });

@@ -13,16 +13,15 @@ class _$UserUpdateMe extends UserUpdateMe {
   final String? email;
 
   factory _$UserUpdateMe([void Function(UserUpdateMeBuilder)? updates]) =>
-      (new UserUpdateMeBuilder()..update(updates))._build();
+      (UserUpdateMeBuilder()..update(updates))._build();
 
   _$UserUpdateMe._({this.fullName, this.email}) : super._();
-
   @override
   UserUpdateMe rebuild(void Function(UserUpdateMeBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  UserUpdateMeBuilder toBuilder() => new UserUpdateMeBuilder()..replace(this);
+  UserUpdateMeBuilder toBuilder() => UserUpdateMeBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -78,7 +77,6 @@ class UserUpdateMeBuilder
 
   @override
   void replace(UserUpdateMe other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$UserUpdateMe;
   }
 
@@ -92,7 +90,7 @@ class UserUpdateMeBuilder
 
   _$UserUpdateMe _build() {
     final _$result = _$v ??
-        new _$UserUpdateMe._(
+        _$UserUpdateMe._(
           fullName: fullName,
           email: email,
         );

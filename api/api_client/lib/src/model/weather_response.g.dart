@@ -12,23 +12,19 @@ class _$WeatherResponse extends WeatherResponse {
   @override
   final String? errorMsg;
   @override
-  final WeatherData? data;
+  final BuiltMap<String, JsonObject?>? data;
 
   factory _$WeatherResponse([void Function(WeatherResponseBuilder)? updates]) =>
-      (new WeatherResponseBuilder()..update(updates))._build();
+      (WeatherResponseBuilder()..update(updates))._build();
 
   _$WeatherResponse._({required this.code, this.errorMsg, this.data})
-      : super._() {
-    BuiltValueNullFieldError.checkNotNull(code, r'WeatherResponse', 'code');
-  }
-
+      : super._();
   @override
   WeatherResponse rebuild(void Function(WeatherResponseBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  WeatherResponseBuilder toBuilder() =>
-      new WeatherResponseBuilder()..replace(this);
+  WeatherResponseBuilder toBuilder() => WeatherResponseBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -71,9 +67,10 @@ class WeatherResponseBuilder
   String? get errorMsg => _$this._errorMsg;
   set errorMsg(String? errorMsg) => _$this._errorMsg = errorMsg;
 
-  WeatherDataBuilder? _data;
-  WeatherDataBuilder get data => _$this._data ??= new WeatherDataBuilder();
-  set data(WeatherDataBuilder? data) => _$this._data = data;
+  MapBuilder<String, JsonObject?>? _data;
+  MapBuilder<String, JsonObject?> get data =>
+      _$this._data ??= MapBuilder<String, JsonObject?>();
+  set data(MapBuilder<String, JsonObject?>? data) => _$this._data = data;
 
   WeatherResponseBuilder() {
     WeatherResponse._defaults(this);
@@ -92,7 +89,6 @@ class WeatherResponseBuilder
 
   @override
   void replace(WeatherResponse other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$WeatherResponse;
   }
 
@@ -108,7 +104,7 @@ class WeatherResponseBuilder
     _$WeatherResponse _$result;
     try {
       _$result = _$v ??
-          new _$WeatherResponse._(
+          _$WeatherResponse._(
             code: BuiltValueNullFieldError.checkNotNull(
                 code, r'WeatherResponse', 'code'),
             errorMsg: errorMsg,
@@ -120,7 +116,7 @@ class WeatherResponseBuilder
         _$failedField = 'data';
         _data?.build();
       } catch (e) {
-        throw new BuiltValueNestedFieldError(
+        throw BuiltValueNestedFieldError(
             r'WeatherResponse', _$failedField, e.toString());
       }
       rethrow;

@@ -5,8 +5,5 @@ analyzer:
     strict-casts: false
   exclude:
     - test/*.dart
-    - api/api_client/lib/src/*.dart
   errors:
     deprecated_member_use_from_same_package: ignore
-    unused_element_parameter: ignore
-    unused_import: ignore

@@ -15,21 +15,16 @@ class _$UserRegister extends UserRegister {
   final String? fullName;
 
   factory _$UserRegister([void Function(UserRegisterBuilder)? updates]) =>
-      (new UserRegisterBuilder()..update(updates))._build();
+      (UserRegisterBuilder()..update(updates))._build();
 
   _$UserRegister._({required this.email, required this.password, this.fullName})
-      : super._() {
-    BuiltValueNullFieldError.checkNotNull(email, r'UserRegister', 'email');
-    BuiltValueNullFieldError.checkNotNull(
-        password, r'UserRegister', 'password');
-  }
-
+      : super._();
   @override
   UserRegister rebuild(void Function(UserRegisterBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  UserRegisterBuilder toBuilder() => new UserRegisterBuilder()..replace(this);
+  UserRegisterBuilder toBuilder() => UserRegisterBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -93,7 +88,6 @@ class UserRegisterBuilder
 
   @override
   void replace(UserRegister other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$UserRegister;
   }
 
@@ -107,7 +101,7 @@ class UserRegisterBuilder
 
   _$UserRegister _build() {
     final _$result = _$v ??
-        new _$UserRegister._(
+        _$UserRegister._(
           email: BuiltValueNullFieldError.checkNotNull(
               email, r'UserRegister', 'email'),
           password: BuiltValueNullFieldError.checkNotNull(

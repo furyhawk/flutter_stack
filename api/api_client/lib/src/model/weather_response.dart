@@ -3,7 +3,8 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:api_client/src/model/weather_data.dart';
+import 'package:built_collection/built_collection.dart';
+import 'package:built_value/json_object.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -24,7 +25,7 @@ abstract class WeatherResponse implements Built<WeatherResponse, WeatherResponse
   String? get errorMsg;
 
   @BuiltValueField(wireName: r'data')
-  WeatherData? get data;
+  BuiltMap<String, JsonObject?>? get data;
 
   WeatherResponse._();
 
@@ -65,7 +66,7 @@ class _$WeatherResponseSerializer implements PrimitiveSerializer<WeatherResponse
       yield r'data';
       yield serializers.serialize(
         object.data,
-        specifiedType: const FullType.nullable(WeatherData),
+        specifiedType: const FullType.nullable(BuiltMap, [FullType(String), FullType.nullable(JsonObject)]),
       );
     }
   }
@@ -109,8 +110,8 @@ class _$WeatherResponseSerializer implements PrimitiveSerializer<WeatherResponse
         case r'data':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType.nullable(WeatherData),
-          ) as WeatherData?;
+            specifiedType: const FullType.nullable(BuiltMap, [FullType(String), FullType.nullable(JsonObject)]),
+          ) as BuiltMap<String, JsonObject?>?;
           if (valueDes == null) continue;
           result.data.replace(valueDes);
           break;

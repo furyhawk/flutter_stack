@@ -11,18 +11,15 @@ class _$Message extends Message {
   final String message;
 
   factory _$Message([void Function(MessageBuilder)? updates]) =>
-      (new MessageBuilder()..update(updates))._build();
+      (MessageBuilder()..update(updates))._build();
 
-  _$Message._({required this.message}) : super._() {
-    BuiltValueNullFieldError.checkNotNull(message, r'Message', 'message');
-  }
-
+  _$Message._({required this.message}) : super._();
   @override
   Message rebuild(void Function(MessageBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  MessageBuilder toBuilder() => new MessageBuilder()..replace(this);
+  MessageBuilder toBuilder() => MessageBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
@@ -67,7 +64,6 @@ class MessageBuilder implements Builder<Message, MessageBuilder> {
 
   @override
   void replace(Message other) {
-    ArgumentError.checkNotNull(other, 'other');
     _$v = other as _$Message;
   }
 
@@ -81,7 +77,7 @@ class MessageBuilder implements Builder<Message, MessageBuilder> {
 
   _$Message _build() {
     final _$result = _$v ??
-        new _$Message._(
+        _$Message._(
           message: BuiltValueNullFieldError.checkNotNull(
               message, r'Message', 'message'),
         );
