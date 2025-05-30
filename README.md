@@ -15,6 +15,11 @@ This project demonstrates a Flutter application with integrated OpenAPI client g
 ## Features
 
 - Authentication (login, registration, and profile management)
+- **Weather Hub**: Comprehensive weather dashboard with Singapore weather data
+  - Real-time weather overview
+  - Multiple forecast types (2-hour, 24-hour, 4-day outlook)
+  - Air temperature, lightning, and wind direction data
+  - Interactive weather service cards
 - Item management (create, read, update, and delete items)
 - Weather information display
 - Secure storage for authentication tokens

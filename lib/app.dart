@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_stack/core/theme/app_theme.dart';
 import 'package:flutter_stack/features/auth/domain/auth_provider.dart';
 import 'package:flutter_stack/features/auth/presentation/login_screen.dart';
-import 'package:flutter_stack/features/items/presentation/items_screen.dart';
+import 'package:flutter_stack/features/home/presentation/home_screen.dart';
 import 'package:provider/provider.dart';
 
 class App extends StatefulWidget {
@@ -52,7 +52,7 @@ class _AppState extends State<App> {
               }
               
               return authProvider.isAuthenticated
-                  ? const ItemsScreen()
+                  ? const HomeScreen()
                   : const LoginScreen();
             },
           ),
