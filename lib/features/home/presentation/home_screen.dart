@@ -7,6 +7,7 @@ import 'package:flutter_stack/features/items/presentation/items_screen.dart';
 import 'package:flutter_stack/features/profile/presentation/profile_screen.dart';
 import 'package:flutter_stack/features/weather/data/weather_repository.dart';
 import 'package:flutter_stack/features/weather/presentation/weather_screen.dart';
+import 'package:flutter_stack/features/weather/presentation/weather_map_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:weather_icons/weather_icons.dart';
 
@@ -248,6 +249,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisSpacing: 12,
                       childAspectRatio: 1.2,
                       children: [
+                        _buildWeatherServiceCard(
+                          title: 'Weather Map',
+                          icon: Icons.map,
+                          color: Colors.indigo,
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (_) => const WeatherMapScreen()),
+                            );
+                          },
+                        ),
                         _buildWeatherServiceCard(
                           title: '2-Hour Forecast',
                           icon: WeatherIcons.time_2,
