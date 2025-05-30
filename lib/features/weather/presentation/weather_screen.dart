@@ -1,5 +1,4 @@
 import 'package:api_client/api_client.dart';
-import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stack/core/utils/service_locator.dart';
 import 'package:flutter_stack/features/weather/data/weather_repository.dart';
@@ -47,8 +46,54 @@ class _WeatherScreenState extends State<WeatherScreen> {
     }
   }
   
+  List<Map<String, dynamic>>? _getWeatherItems() {
+    if (_weatherData?.data == null) return null;
+    
+    final itemsJson = _weatherData!.data!['items'];
+    if (itemsJson == null) return null;
+    
+    // JsonObject represents arbitrary JSON, we need to extract the value
+    if (itemsJson.isList) {
+      final itemsList = itemsJson.asList;
+      return itemsList.map((item) {
+        if (item is Map<String, dynamic>) {
+          return item;
+        } else if (item is Map) {
+          return item.cast<String, dynamic>();
+        }
+        return <String, dynamic>{};
+      }).toList();
+    }
+    
+    return null;
+  }
+  
+  List<Map<String, dynamic>>? _getAreaMetadata() {
+    if (_weatherData?.data == null) return null;
+    
+    final areaMetadataJson = _weatherData!.data!['area_metadata'];
+    if (areaMetadataJson == null) return null;
+    
+    // JsonObject represents arbitrary JSON, we need to extract the value
+    if (areaMetadataJson.isList) {
+      final areaMetadataList = areaMetadataJson.asList;
+      return areaMetadataList.map((item) {
+        if (item is Map<String, dynamic>) {
+          return item;
+        } else if (item is Map) {
+          return item.cast<String, dynamic>();
+        }
+        return <String, dynamic>{};
+      }).toList();
+    }
+    
+    return null;
+  }
+  
   @override
   Widget build(BuildContext context) {
+    final weatherItems = _getWeatherItems();
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Weather'),
@@ -73,18 +118,19 @@ class _WeatherScreenState extends State<WeatherScreen> {
                     ],
                   ),
                 )
-              : _weatherData == null || _weatherData!.data == null || _weatherData!.data!.items.isEmpty
+              : _weatherData == null || _weatherData!.data == null || weatherItems == null || weatherItems.isEmpty
                   ? const Center(child: Text('No weather data available'))
                   : RefreshIndicator(
                       onRefresh: _loadWeatherData,
                       child: ListView.builder(
                         padding: const EdgeInsets.all(16),
-                        itemCount: _weatherData!.data!.items.length,
+                        itemCount: weatherItems.length,
                         itemBuilder: (context, index) {
-                          final weatherItem = _weatherData!.data!.items[index];
+                          final weatherItem = weatherItems[index];
+                          final areaMetadata = _getAreaMetadata();
                           return WeatherCard(
                             weatherItem: weatherItem,
-                            areaMetadata: _weatherData!.data!.areaMetadata,
+                            areaMetadata: areaMetadata,
                           );
                         },
                       ),
@@ -94,8 +140,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
 }
 
 class WeatherCard extends StatelessWidget {
-  final WeatherItem weatherItem;
-  final BuiltList<AreaMetadata> areaMetadata;
+  final Map<String, dynamic> weatherItem;
+  final List<Map<String, dynamic>>? areaMetadata;
   
   const WeatherCard({
     super.key,
@@ -103,8 +149,18 @@ class WeatherCard extends StatelessWidget {
     required this.areaMetadata,
   });
 
+  String _getDisplayValue(dynamic value) {
+    if (value == null) return 'N/A';
+    return value.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final updateTimestamp = _getDisplayValue(weatherItem['update_timestamp']);
+    final timestamp = _getDisplayValue(weatherItem['timestamp']);
+    final validPeriod = weatherItem['valid_period'] as Map<String, dynamic>?;
+    final forecasts = weatherItem['forecasts'] as List<dynamic>?;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -113,50 +169,83 @@ class WeatherCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Weather updated: ${weatherItem.updateTimestamp}',
+              'Weather updated: $updateTimestamp',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
             Text(
-              'Valid period: ${weatherItem.validPeriod.start} - ${weatherItem.validPeriod.end}',
+              'Timestamp: $timestamp',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
+            if (validPeriod != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Valid period: ${_getDisplayValue(validPeriod['start'])} - ${_getDisplayValue(validPeriod['end'])}',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              if (validPeriod['text'] != null)
+                Text(
+                  'Duration: ${_getDisplayValue(validPeriod['text'])}',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+            ],
             const SizedBox(height: 16),
-            if (weatherItem.forecasts.isNotEmpty)
-              _buildForecastList(context, weatherItem.forecasts),
+            if (forecasts != null && forecasts.isNotEmpty)
+              _buildForecastList(context, forecasts),
           ],
         ),
       ),
     );
   }
   
-  Widget _buildForecastList(BuildContext context, BuiltList<Forecast> forecasts) {
+  Widget _buildForecastList(BuildContext context, List<dynamic> forecasts) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Forecasts',
+          'Forecasts (${forecasts.length} areas)',
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
-        ...forecasts.map((forecast) => _buildForecastItem(context, forecast)).toList(),
+        // Show first 10 forecasts to avoid overwhelming the UI
+        ...forecasts.take(10).map((forecast) => _buildForecastItem(context, forecast)).toList(),
+        if (forecasts.length > 10)
+          Text(
+            '... and ${forecasts.length - 10} more areas',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              fontStyle: FontStyle.italic,
+            ),
+          ),
       ],
     );
   }
   
-  Widget _buildForecastItem(BuildContext context, Forecast forecast) {
+  Widget _buildForecastItem(BuildContext context, dynamic forecastData) {
+    final forecast = forecastData as Map<String, dynamic>?;
+    if (forecast == null) return const SizedBox.shrink();
+
+    final area = _getDisplayValue(forecast['area']);
+    final forecastText = _getDisplayValue(forecast['forecast']);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Area: ${forecast.area}',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+          Expanded(
+            flex: 2,
+            child: Text(
+              area,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
           ),
-          Text(
-            'Forecast: ${forecast.forecast}',
-            style: Theme.of(context).textTheme.bodyMedium,
+          const SizedBox(width: 8),
+          Expanded(
+            flex: 3,
+            child: Text(
+              forecastText,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
           ),
         ],
       ),
